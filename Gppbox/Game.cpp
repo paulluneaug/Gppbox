@@ -1,68 +1,98 @@
 
-#include <imgui.h>
 #include <array>
+#include <imgui.h>
 #include <vector>
 
 #include "C.hpp"
 #include "Game.hpp"
 
 #include "HotReloadShader.hpp"
+#include "Entity.h"
+#include "GlobalParameters.h"
 
 
-static int cols = 1280 / C::GRID_SIZE;
-static int lastLine = 720 / C::GRID_SIZE - 1;
+static int cols = 1280 / Consts::GRID_SIZE;
+static int lastLine = 720 / Consts::GRID_SIZE - 1;
 
-Game::Game(sf::RenderWindow * win) {
-	this->win = win;
-	bg = sf::RectangleShape(Vector2f((float)win->getSize().x, (float)win->getSize().y));
+Game::Game(sf::RenderWindow* win) {
+	this->m_window = win;
+	m_background = sf::RectangleShape(Vector2f((float)win->getSize().x, (float)win->getSize().y));
 
-	bool isOk = tex.loadFromFile("res/bg_stars.png");
+	bool isOk = m_backgroundTexture.loadFromFile("res/bg_stars.png");
 	if (!isOk) {
 		printf("ERR : LOAD FAILED\n");
 	}
-	bg.setTexture(&tex);
-	bg.setSize(sf::Vector2f(1280, 720));
+	m_background.setTexture(&m_backgroundTexture);
+	m_background.setSize(sf::Vector2f(1280, 720));
 
-	bgShader = new HotReloadShader("res/bg.vert", "res/bg.frag");
-	
-	for (int i = 0; i < 1280 / C::GRID_SIZE; ++i) 
-		walls.push_back( Vector2i(i, lastLine) );
-
-	walls.push_back(Vector2i(0, lastLine-1));
-	walls.push_back(Vector2i(0, lastLine-2));
-	walls.push_back(Vector2i(0, lastLine-3));
-
-	walls.push_back(Vector2i(cols-1, lastLine - 1));
-	walls.push_back(Vector2i(cols-1, lastLine - 2));
-	walls.push_back(Vector2i(cols-1, lastLine - 3));
-
-	walls.push_back(Vector2i(cols >>2, lastLine - 2));
-	walls.push_back(Vector2i(cols >>2, lastLine - 3));
-	walls.push_back(Vector2i(cols >>2, lastLine - 4));
-	walls.push_back(Vector2i((cols >> 2) + 1, lastLine - 4));
-	cacheWalls();
+	m_backgroundShader = new HotReloadShader("res/bg.vert", "res/bg.frag");
+	InitWalls();
+	InitEntities();
 }
 
-void Game::cacheWalls()
+Game::~Game()
 {
-	wallSprites.clear();
-	for (Vector2i & w : walls) {
-		sf::RectangleShape rect(Vector2f(16,16));
-		rect.setPosition((float)w.x * C::GRID_SIZE, (float)w.y * C::GRID_SIZE);
+	if (m_backgroundShader) 
+	{
+		delete m_backgroundShader;
+	}
+	for (Entity* entity : m_entities) 
+	{
+		if (entity) 
+		{
+			delete entity;
+		}
+	}
+
+}
+
+void Game::InitWalls()
+{
+	for (int i = 0; i < 1280 / Consts::GRID_SIZE; ++i)
+		m_walls.push_back(Vector2i(i, lastLine));
+
+	m_walls.push_back(Vector2i(0, lastLine - 1));
+	m_walls.push_back(Vector2i(0, lastLine - 2));
+	m_walls.push_back(Vector2i(0, lastLine - 3));
+
+	m_walls.push_back(Vector2i(cols - 1, lastLine - 1));
+	m_walls.push_back(Vector2i(cols - 1, lastLine - 2));
+	m_walls.push_back(Vector2i(cols - 1, lastLine - 3));
+
+	m_walls.push_back(Vector2i(cols >> 2, lastLine - 2));
+	m_walls.push_back(Vector2i(cols >> 2, lastLine - 3));
+	m_walls.push_back(Vector2i(cols >> 2, lastLine - 4));
+	m_walls.push_back(Vector2i((cols >> 2) + 1, lastLine - 4));
+	CacheWalls();
+}
+
+void Game::InitEntities()
+{
+	m_player = new Entity(*this, { 2, 1 });
+	m_player->SetCoordinates(300.0f, 300.0f);
+	m_entities.push_back(m_player);
+}
+
+void Game::CacheWalls()
+{
+	m_wallSprites.clear();
+	for (Vector2i& w : m_walls) {
+		sf::RectangleShape rect(Vector2f(16, 16));
+		rect.setPosition((float)w.x * Consts::GRID_SIZE, (float)w.y * Consts::GRID_SIZE);
 		rect.setFillColor(sf::Color(0x07ff07ff));
-		wallSprites.push_back(rect);
+		m_wallSprites.push_back(rect);
 	}
 }
 
-void Game::processInput(sf::Event ev) {
+void Game::ProcessInput(sf::Event ev) {
 	if (ev.type == sf::Event::Closed) {
-		win->close();
-		closing = true;
+		m_window->close();
+		m_closing = true;
 		return;
 	}
 	if (ev.type == sf::Event::KeyReleased) {
-		
-	
+
+
 	}
 }
 
@@ -71,19 +101,16 @@ static double g_time = 0.0;
 static double g_tickTimer = 0.0;
 
 
-void Game::pollInput(double dt) {
+void Game::PollInput(double dt) {
 
 	float lateralSpeed = 8.0;
 	float maxSpeed = 40.0;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q)) {
-
+		m_player->Dx = std::clamp(m_player->Dx - lateralSpeed, -maxSpeed, maxSpeed);
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-
-	}
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
+		m_player->Dx = std::clamp(m_player->Dx + lateralSpeed, -maxSpeed, maxSpeed);
 
 	}
 
@@ -91,13 +118,13 @@ void Game::pollInput(double dt) {
 
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
-		if (!wasPressed) {
-			onSpacePressed();
-			wasPressed = true;
+		if (!m_wasSpacePressed) {
+			OnSpacePressed();
+			m_wasSpacePressed = true;
 		}
 	}
 	else {
-		wasPressed = false;
+		m_wasSpacePressed = false;
 	}
 
 }
@@ -114,56 +141,76 @@ int blendModeIndex(sf::BlendMode bm) {
 	return 4;
 };
 
-void Game::update(double dt) {
-	pollInput(dt);
+void Game::Update(double dt) {
+	PollInput(dt);
 
 	g_time += dt;
-	if (bgShader) bgShader->update(dt);
+	if (m_backgroundShader) m_backgroundShader->update(dt);
 
 	beforeParts.update(dt);
 	afterParts.update(dt);
+
+
+	for (Entity* entity : m_entities) {
+		entity->Update(dt);
+	}
 }
 
- void Game::draw(sf::RenderWindow & win) {
-	if (closing) return;
+void Game::Draw(sf::RenderWindow& win) {
+	if (m_closing) return;
 
 	sf::RenderStates states = sf::RenderStates::Default;
-	sf::Shader * sh = &bgShader->sh;
+	sf::Shader* sh = &m_backgroundShader->sh;
 	states.blendMode = sf::BlendAdd;
 	states.shader = sh;
-	states.texture = &tex;
-	sh->setUniform("texture", tex);
+	states.texture = &m_backgroundTexture;
+	sh->setUniform("texture", m_backgroundTexture);
 	//sh->setUniform("time", g_time);
-	win.draw(bg, states);
+	win.draw(m_background, states);
 
 	beforeParts.draw(win);
 
-	for (sf::RectangleShape & r : wallSprites)
+	for (sf::RectangleShape& r : m_wallSprites)
 		win.draw(r);
 
-	for (sf::RectangleShape& r : rects) 
+	for (sf::RectangleShape& r : rects)
 		win.draw(r);
-	
+
+	for (Entity* entity : m_entities) {
+		entity->Draw(win);
+	}
+
 
 	afterParts.draw(win);
 }
 
-void Game::onSpacePressed() {
-	
+void Game::OnSpacePressed() {
+	m_player->Jump();
 }
 
 
-bool Game::isWall(int cx, int cy)
+bool Game::IsWall(int cx, int cy)
 {
-	for (Vector2i & w : walls) {
+	for (Vector2i& w : m_walls) {
 		if (w.x == cx && w.y == cy)
 			return true;
 	}
 	return false;
 }
 
-void Game::im()
+void Game::DrawImGui()
 {
+	if (ImGui::CollapsingHeader("Global Paramaters")) 
+	{
+		ImGui::DragFloat("Gravity", &GlobalParameters::GRAVITY, 0.5f, 0.0f);
+	}
 
+	if (ImGui::CollapsingHeader("Entities"))
+	{
+		for (Entity* entity : m_entities) 
+		{
+			entity->DrawImGui();
+		}
+	}
 }
 

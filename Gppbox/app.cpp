@@ -106,7 +106,7 @@ int main()
 		while (window.pollEvent(event))//sort un evenement de la liste pour le traiter
 		{
 			ImGui::SFML::ProcessEvent(event);
-			g.processInput(event);
+			g.ProcessInput(event);
 
 			if (event.type == sf::Event::Resized) {
 				auto nsz = window.getSize();
@@ -126,7 +126,7 @@ int main()
 		//don't use imgui before this;
 		ImGui::SFML::Update(window, sf::seconds((float)dt));
 
-        g.update(dt);
+        g.Update(dt);
 		
 		if (ImGui::CollapsingHeader("View")) {
 			auto sz = v.getSize();
@@ -155,9 +155,9 @@ int main()
 			ImGui::SliderFloat("bloomWidth", &bloomWidth, 0, 55);//55 is max acceptable kernel size for constants, otherwise we should use a texture
 			ImGui::ColorEdit4("bloomMul", &bloomMul.x);
 		}
-		g.im();
+		g.DrawImGui();
 
-        g.draw(window);
+        g.Draw(window);
 
 		window.draw(fpsCounter);
 
