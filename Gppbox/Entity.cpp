@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include <imgui.h>
+
 #include "C.hpp"
 #include "Entity.h"
 #include "GlobalParameters.h"
@@ -7,9 +9,14 @@
 
 Entity::Entity(Game& game, sf::Vector2i size) :
 	m_game(game),
-	m_canJump(true),
+	m_grounded(true),
 	m_size(size),
-	m_sprite(nullptr)
+	m_sprite(nullptr),
+	m_name("Entity"),
+	m_freeze(false),
+	m_groundFriction(DEFAULT_GROUND_FRICTION),
+	m_airFriction(DEFAULT_AIR_FRICTION),
+	m_jumpInput(false)
 {
 	sf::Texture texture = {};
 	texture.loadFromFile("res/Player.png");
@@ -23,7 +30,7 @@ Entity::Entity(Game& game, sf::Vector2i size) :
 	sf::Vector2f origin = sf::Vector2f{ float(int(size.x / 2) * Consts::GRID_SIZE), float(size.y * Consts::GRID_SIZE) };
 	m_sprite->setOrigin(origin);
 
-	m_xOffsets = size.x % 2 == 0 ?
+	m_xOffsets = (size.x & 1) == 0 ?
 		std::pair<int, int>{ -size.x / 2, size.x / 2} :
 		std::pair<int, int>{ -size.x / 2, size.x / 2 + 1 };
 
@@ -45,25 +52,58 @@ void Entity::SetCoordinates(float x, float y)
 	Dy = 0.0f;
 }
 
+void Entity::SetName(const std::string& name)
+{
+	m_name = name;
+}
+
+void Entity::SetJumpInput(bool state)
+{
+	m_jumpInput = state;
+}
+
 void Entity::Update(float deltaTime)
 {
+	if (m_freeze) 
+	{
+		return;
+	}
 
-	Xx = (GridX + Rx) * Consts::GRID_SIZE;
-	Yy = (GridY + Ry) * Consts::GRID_SIZE;
-
-	UpdatePhysics(deltaTime);
+	UpdatePosition(deltaTime);
 
 }
 
-void Entity::UpdatePhysics(float deltaTime)
+void Entity::UpdatePosition(float deltaTime)
 {
+	TryJump();
+
 	Rx += Dx * deltaTime;
 	Ry += Dy * deltaTime;
 
-	Dx *= FRICTION;
-	Dy += GlobalParameters::GRAVITY * deltaTime;
-	Dy *= std::pow(FRICTION, deltaTime);
+	float friction = m_grounded ? m_groundFriction : m_airFriction;
 
+	Dx *= friction;
+	Dy += GlobalParameters::GRAVITY * deltaTime;
+	Dy *= std::powf(m_airFriction, deltaTime);
+
+	ResolvePhysics(deltaTime);
+
+	Xx = (GridX + Rx) * Consts::GRID_SIZE;
+	Yy = (GridY + Ry) * Consts::GRID_SIZE;
+}
+
+void Entity::TryJump()
+{
+	if (!m_jumpInput || !m_grounded) 
+	{
+		return;
+	}
+
+	Dy -= m_jumpForce;
+}
+
+void Entity::ResolvePhysics(float deltaTime)
+{
 	while (Rx > 1.0f)
 	{
 		bool hasCollision = false;
@@ -115,6 +155,7 @@ void Entity::UpdatePhysics(float deltaTime)
 	while (Ry > 1.0f)
 	{
 		bool hasCollision = false;
+
 		for (int widthSegment = m_xOffsets.first; widthSegment <= m_xOffsets.second; ++widthSegment)
 		{
 			if (HasCollisionWithCell(GridX + widthSegment, GridY + 1))
@@ -123,23 +164,25 @@ void Entity::UpdatePhysics(float deltaTime)
 				break;
 			}
 		}
-
+		
 		if (hasCollision)
 		{
 			Ry = 0.99f;
 			Dy = 0.0f;
 
-			m_canJump = true;
+			m_grounded = true;
 		}
 		else
 		{
 			--Ry;
 			++GridY;
+			m_grounded = false;
 		}
 	}
 
 	while (Ry < 0.0f)
 	{
+		m_grounded = false;
 		bool hasCollision = false;
 		for (int widthSegment = m_xOffsets.first; widthSegment <= m_xOffsets.second; ++widthSegment)
 		{
@@ -175,16 +218,34 @@ void Entity::Draw(sf::RenderWindow& window)
 	window.draw(*m_sprite);
 }
 
-void Entity::Jump()
-{
-	if (m_canJump)
-	{
-		Dy -= m_jumpForce;
-		m_canJump = false;
-	}
-}
-
 bool Entity::DrawImGui()
 {
+	if (ImGui::TreeNode(m_name.c_str()))
+	{
+		ImGui::Text("Transform");
+
+		// Freeze
+		ImGui::Checkbox("Freeze", &m_freeze);
+
+		// Position
+		float position[2] = { Xx, Yy };
+		if (ImGui::DragFloat2("Position", position))
+		{
+			SetCoordinates(position[0], position[1]);
+		}
+
+		ImGui::Text("Grid coordinates : (%i ; %i)", GridX, GridY);
+		ImGui::Text("Coordinates in cell : (%.2f ; %.2f)", Rx, Ry);
+
+
+		ImGui::Separator();
+
+		ImGui::Text("Controller Settings");
+		ImGui::DragFloat("Jump Force", &m_jumpForce);
+		ImGui::DragFloat("Ground Friction", &m_groundFriction);
+		ImGui::DragFloat("Air Friction", &m_airFriction);
+
+		ImGui::TreePop();
+	}
 	return false;
 }

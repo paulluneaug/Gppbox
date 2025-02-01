@@ -68,7 +68,8 @@ void Game::InitWalls()
 
 void Game::InitEntities()
 {
-	m_player = new Entity(*this, { 2, 1 });
+	m_player = new Entity(*this, { 2, 2 });
+	m_player->SetName("Player");
 	m_player->SetCoordinates(300.0f, 300.0f);
 	m_entities.push_back(m_player);
 }
@@ -117,15 +118,9 @@ void Game::PollInput(double dt) {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T)) {
 
 	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
-		if (!m_wasSpacePressed) {
-			OnSpacePressed();
-			m_wasSpacePressed = true;
-		}
-	}
-	else {
-		m_wasSpacePressed = false;
-	}
+
+	bool spacePressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space);
+	m_player->SetJumpInput(spacePressed);
 
 }
 
@@ -182,10 +177,6 @@ void Game::Draw(sf::RenderWindow& win) {
 
 
 	afterParts.draw(win);
-}
-
-void Game::OnSpacePressed() {
-	m_player->Jump();
 }
 
 

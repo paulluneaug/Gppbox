@@ -38,9 +38,6 @@ public:
 	ParticleManager beforeParts;
 	ParticleManager afterParts;
 
-
-	bool m_wasSpacePressed = false;
-
 	Game(sf::RenderWindow * win);
 	~Game();
 
@@ -49,7 +46,6 @@ public:
 
 	void ProcessInput(sf::Event ev);
 	void PollInput(double dt);
-	void OnSpacePressed();
 
 	void Update(double dt);
 
