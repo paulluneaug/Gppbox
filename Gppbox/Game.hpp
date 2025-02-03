@@ -1,6 +1,9 @@
 #pragma once
 
 #include <vector>
+#include <iostream>
+#include <fstream>
+#include <sstream>
 
 #include "SFML/Graphics.hpp"
 #include "SFML/System.hpp"
@@ -12,11 +15,22 @@
 #include "ParticleManager.hpp"
 
 
-using namespace sf;
-
 class Entity;
+class EnemyEntity;
+class PlayerEntity;
+
 class HotReloadShader;
+
 class Game {
+private:
+	enum PlacableObject 
+	{
+		None = 0,
+		Wall = 1,
+		Enemy = 2,
+		Player = 3,
+	};
+
 public:
 	sf::RenderWindow*				m_window = nullptr;
 	bool							m_closing = false;
@@ -31,8 +45,14 @@ public:
 	std::vector<sf::RectangleShape> m_wallSprites;
 
 private:
-	Entity* m_player;
-	std::vector<Entity*> m_entities;
+	PlayerEntity* m_player;
+	std::vector<Entity*> m_enemies;
+
+	// Edit Mode
+	static constexpr char DELIMITER = ' ';
+	bool m_editMode;
+	PlacableObject m_selectedObject;
+
 
 public:
 	ParticleManager beforeParts;
@@ -52,10 +72,28 @@ public:
 	void Draw(sf::RenderWindow& win);
 
 	bool IsWall(int cx, int cy);
+	bool IsWall(sf::Vector2i position);
+
 	void DrawImGui();
 
 private:
 
 	void InitWalls();
-	void InitEntities();
+	void InitPlayer();
+
+	// Edit Mode
+	void LoadLevel();
+	void CreateEmptyLevel();
+	void ReloadLevel();
+	void SaveLevel();
+	void ClearLevel();
+	void EnterEditMode();
+	void ExitEditMode();
+	void ProcessMouseInput(sf::Mouse::Button pressedButton);
+	EnemyEntity* CreateEnemyAtPosition(sf::Vector2i position);
+
+	bool IsEnemyAtPosition(sf::Vector2i position);
+
+	static bool TryParseVector2i(std::string& r_str, char delimiter, sf::Vector2i& o_result);
+	static void DeleteIfExists(void* ptr);
 };

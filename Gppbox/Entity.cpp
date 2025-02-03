@@ -52,6 +52,11 @@ void Entity::SetCoordinates(float x, float y)
 	Dy = 0.0f;
 }
 
+void Entity::SetGridCoordinates(int x, int y)
+{
+	SetCoordinates(x * Consts::GRID_SIZE, y * Consts::GRID_SIZE);
+}
+
 void Entity::SetName(const std::string& name)
 {
 	m_name = name;

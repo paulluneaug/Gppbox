@@ -45,11 +45,14 @@ private:
 	std::pair<int, int> m_xOffsets;
 
 public:
-	Entity(Game&, sf::Vector2i size);
+	Entity(Game& r_game, sf::Vector2i size);
+
 	void SetCoordinates(float x, float y);
+	void SetGridCoordinates(int x, int y);
 	void SetName(const std::string& name);
+
 	void Update(float deltaTime);
-	void Draw(sf::RenderWindow& window);
+	void Draw(sf::RenderWindow& r_window);
 	void SetJumpInput(bool state);
 
 	bool DrawImGui();
