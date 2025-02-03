@@ -9,41 +9,53 @@
 #include "sys.hpp"
 
 #include "Particle.hpp"
-#include "ParticleMan.hpp"
+#include "ParticleManager.hpp"
+
 
 using namespace sf;
 
+class Entity;
 class HotReloadShader;
 class Game {
 public:
-	sf::RenderWindow*				win = nullptr;
+	sf::RenderWindow*				m_window = nullptr;
+	bool							m_closing = false;
 
-	sf::RectangleShape				bg;
-	HotReloadShader *				bgShader = nullptr;
+	// Background
+	sf::RectangleShape				m_background;
+	HotReloadShader *				m_backgroundShader = nullptr;
+	sf::Texture						m_backgroundTexture;
 
-	sf::Texture						tex;
-
-	bool							closing = false;
 	
-	std::vector<sf::Vector2i>		walls;
-	std::vector<sf::RectangleShape> wallSprites;
+	std::vector<sf::Vector2i>		m_walls;
+	std::vector<sf::RectangleShape> m_wallSprites;
 
-	ParticleMan beforeParts;
-	ParticleMan afterParts;
+private:
+	Entity* m_player;
+	std::vector<Entity*> m_entities;
+
+public:
+	ParticleManager beforeParts;
+	ParticleManager afterParts;
 
 	Game(sf::RenderWindow * win);
+	~Game();
 
-	void cacheWalls();
 
-	void processInput(sf::Event ev);
-	bool wasPressed = false;
-	void pollInput(double dt);
-	void onSpacePressed();
+	void CacheWalls();
 
-	void update(double dt);
+	void ProcessInput(sf::Event ev);
+	void PollInput(double dt);
 
-	void draw(sf::RenderWindow& win);
+	void Update(double dt);
 
-	bool isWall(int cx, int cy);
-	void im();
+	void Draw(sf::RenderWindow& win);
+
+	bool IsWall(int cx, int cy);
+	void DrawImGui();
+
+private:
+
+	void InitWalls();
+	void InitEntities();
 };
