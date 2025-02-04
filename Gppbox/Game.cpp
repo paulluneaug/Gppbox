@@ -268,6 +268,8 @@ void Game::DrawImGui()
 	}
 }
 
+#pragma region Level Editor
+
 void Game::LoadLevel()
 {
 	enum ReadState
@@ -280,7 +282,7 @@ void Game::LoadLevel()
 
 	std::ifstream fileStream("SavedLevel.txt");
 
-	if (fileStream.fail()) 
+	if (fileStream.fail())
 	{
 		CreateEmptyLevel();
 		return;
@@ -423,6 +425,11 @@ void Game::ExitEditMode()
 
 void Game::ProcessMouseInput(sf::Mouse::Button pressedButton)
 {
+	if (ImGui::IsWindowHovered())
+	{
+		return;
+	}
+
 	if (!m_editMode)
 	{
 		return;
@@ -463,7 +470,7 @@ void Game::ProcessMouseInput(sf::Mouse::Button pressedButton)
 		if (destroyObject)
 		{
 			auto newEnd = std::remove(m_walls.begin(), m_walls.end(), mouseGridPosition);
-			if (newEnd != m_walls.end()) 
+			if (newEnd != m_walls.end())
 			{
 				m_walls.erase(newEnd, m_walls.end());
 				CacheWalls();
@@ -483,10 +490,10 @@ void Game::ProcessMouseInput(sf::Mouse::Button pressedButton)
 		if (destroyObject)
 		{
 			auto newEnd = std::remove_if(
-				m_enemies.begin(), 
+				m_enemies.begin(),
 				m_enemies.end(),
 				[enemyPosition](const Entity* e)
-				{ 
+				{
 					return e->GridX == enemyPosition.x && e->GridY == enemyPosition.y;
 				}
 			);
@@ -507,7 +514,7 @@ void Game::ProcessMouseInput(sf::Mouse::Button pressedButton)
 			if (!IsEnemyAtPosition(enemyPosition))
 			{
 				m_enemies.push_back(CreateEnemyAtPosition(enemyPosition));
-			}			
+			}
 		}
 		break;
 
@@ -531,16 +538,17 @@ EnemyEntity* Game::CreateEnemyAtPosition(sf::Vector2i position)
 
 bool Game::IsEnemyAtPosition(sf::Vector2i position)
 {
-	for (Entity* enemy : m_enemies) 
+	for (Entity* enemy : m_enemies)
 	{
-		if (enemy->GridX == position.x && enemy->GridY == position.y) 
+		if (enemy->GridX == position.x && enemy->GridY == position.y)
 		{
 			return true;
 		}
 	}
 	return false;
-
 }
+
+#pragma endregion
 
 bool Game::TryParseVector2i(std::string& r_str, char delimiter, sf::Vector2i& o_result)
 {
