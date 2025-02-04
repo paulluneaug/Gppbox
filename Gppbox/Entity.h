@@ -24,6 +24,8 @@ public:
 	float Dx;
 	float Dy;
 
+	sf::Vector2f Input;
+
 private:
 	Game& m_game;
 	sf::Shape* m_sprite;
@@ -32,6 +34,10 @@ private:
 	bool m_freeze;
 	float m_groundFriction;
 	float m_airFriction;
+
+	// Speed
+	float m_lateralSpeed = 8.0f;
+	float m_maxSpeed = 1.0f;
 
 	// Jump
 	bool m_grounded;
@@ -55,14 +61,19 @@ public:
 	void Draw(sf::RenderWindow& r_window);
 	void SetJumpInput(bool state);
 
-	bool DrawImGui();
+	virtual bool DrawImGui();
 
 private:
 
-	void UpdatePosition(float deltaTime);
 	void TryJump();
 
 	void ResolvePhysics(float deltaTime);
+
+protected:
+	virtual void UpdatePosition(float deltaTime);
+	bool CollidesLeft(float deltaTime);
+	bool CollidesRight(float deltaTime);
+
 	bool HasCollisionWithCell(int x, int y);
 
 };

@@ -82,6 +82,8 @@ void Entity::UpdatePosition(float deltaTime)
 {
 	TryJump();
 
+	Dx += std::clamp(Input.x * m_lateralSpeed, -m_maxSpeed, m_maxSpeed);
+
 	Rx += Dx * deltaTime;
 	Ry += Dy * deltaTime;
 
@@ -105,6 +107,7 @@ void Entity::TryJump()
 	}
 
 	Dy -= m_jumpForce;
+	m_grounded = false;
 }
 
 void Entity::ResolvePhysics(float deltaTime)
@@ -112,16 +115,8 @@ void Entity::ResolvePhysics(float deltaTime)
 	while (Rx > 1.0f)
 	{
 		bool hasCollision = false;
-		for (int heightSegment = 0; heightSegment < m_size.y; ++heightSegment)
-		{
-			if (HasCollisionWithCell(GridX + m_xOffsets.second + 1, GridY - heightSegment))
-			{
-				hasCollision = true;
-				break;
-			}
-		}
 
-		if (hasCollision)
+		if (CollidesRight(deltaTime))
 		{
 			Rx = 0.99f;
 			Dx = 0.0f;
@@ -135,17 +130,7 @@ void Entity::ResolvePhysics(float deltaTime)
 
 	while (Rx < 0.0f)
 	{
-		bool hasCollision = false;
-		for (int heightSegment = 0; heightSegment < m_size.y; ++heightSegment)
-		{
-			if (HasCollisionWithCell(GridX + m_xOffsets.first - 1, GridY - heightSegment))
-			{
-				hasCollision = true;
-				break;
-			}
-		}
-
-		if (hasCollision)
+		if (CollidesLeft(deltaTime))
 		{
 			Rx = 0.0f;
 			Dx = 0.0f;
@@ -212,6 +197,30 @@ void Entity::ResolvePhysics(float deltaTime)
 
 }
 
+bool Entity::CollidesLeft(float deltaTime)
+{
+	for (int heightSegment = 0; heightSegment < m_size.y; ++heightSegment)
+	{
+		if (HasCollisionWithCell(GridX + m_xOffsets.first - 1, GridY - heightSegment))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Entity::CollidesRight(float deltaTime)
+{
+	for (int heightSegment = 0; heightSegment < m_size.y; ++heightSegment)
+	{
+		if (HasCollisionWithCell(GridX + m_xOffsets.second + 1, GridY - heightSegment))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 bool Entity::HasCollisionWithCell(int cellX, int cellY)
 {
 	return m_game.IsWall(cellX, cellY);
@@ -249,6 +258,11 @@ bool Entity::DrawImGui()
 		ImGui::DragFloat("Jump Force", &m_jumpForce);
 		ImGui::DragFloat("Ground Friction", &m_groundFriction);
 		ImGui::DragFloat("Air Friction", &m_airFriction);
+
+		ImGui::Spacing();
+
+		ImGui::DragFloat("Lateral Speed", &m_lateralSpeed);
+		ImGui::SliderFloat("Max Speed", &m_maxSpeed, 1.0f, 100.0f);
 
 		ImGui::TreePop();
 	}

@@ -101,18 +101,11 @@ static double g_time = 0.0;
 static double g_tickTimer = 0.0;
 
 
-void Game::PollInput(double dt) {
-
-	float lateralSpeed = 8.0;
-	float maxSpeed = 40.0;
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q)) {
-		m_player->Dx = std::clamp(m_player->Dx - lateralSpeed, -maxSpeed, maxSpeed);
-	}
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-		m_player->Dx = std::clamp(m_player->Dx + lateralSpeed, -maxSpeed, maxSpeed);
-
-	}
+void Game::PollInput(double dt)
+{
+	bool leftPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q);
+	bool rightPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D);
+	m_player->Input.x = (leftPressed ? -1 : 0) + (rightPressed ? 1 : 0);
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T)) {
 
