@@ -178,7 +178,11 @@
     <ClCompile Include="app.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Projectile.cpp" />
+    <ClCompile Include="Rifle.cpp" />
     <ClCompile Include="sys.cpp" />
+    <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app.h" />
@@ -198,7 +202,11 @@
     <ClInclude Include="Particle.hpp" />
     <ClInclude Include="ParticleManager.hpp" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Projectile.h" />
+    <ClInclude Include="Rifle.h" />
     <ClInclude Include="sys.hpp" />
+    <ClInclude Include="Utils.h" />
+    <ClInclude Include="Weapon.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
