@@ -183,6 +183,7 @@
     <ClCompile Include="sys.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Weapon.cpp" />
+    <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app.h" />
@@ -207,6 +208,7 @@
     <ClInclude Include="sys.hpp" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Weapon.h" />
+    <ClInclude Include="Timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
