@@ -7,5 +7,5 @@ void Rifle::Update(float deltaTime, float posX, float posY, float dirX, float di
 		Projectile* newProjectile = new Projectile(m_game, { posX, posY }, { dirX, dirY });
 		m_shotProjectiles.push_back(newProjectile);
 	}
-	m_shotProjectiles.
+	//m_shotProjectiles.
 }

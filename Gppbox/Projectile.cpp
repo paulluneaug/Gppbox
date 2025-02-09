@@ -56,7 +56,7 @@ void Projectile::UpdateVelocity(float deltaTime)
 
 bool Projectile::CollidesWithWall()
 {
-	m_game.IsWall(floor(m_position.x), floor(m_position.y));
+	return m_game.IsWall(floor(m_position.x), floor(m_position.y));
 }
 
 bool Projectile::CollidesWithEnemy(Entity* o_hitEnemy)
