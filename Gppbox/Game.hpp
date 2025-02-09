@@ -74,6 +74,8 @@ public:
 	bool IsWall(int cx, int cy);
 	bool IsWall(sf::Vector2i position);
 
+	bool CollidesWithEnemyAtPoint(float x, float y, Entity* o_hitEnemy);
+
 	void DrawImGui();
 
 private:

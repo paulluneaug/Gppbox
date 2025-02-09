@@ -200,6 +200,19 @@ bool Game::IsWall(sf::Vector2i position)
 	return IsWall(position.x, position.y);
 }
 
+bool Game::CollidesWithEnemyAtPoint(float x, float y, Entity* o_hitEnemy)
+{
+	for (Entity* enemy : m_enemies)
+	{
+		if (enemy->CollidesWithPoint(x, y)) 
+		{
+			o_hitEnemy = enemy;
+			return true;
+		}
+	}
+	return false;
+}
+
 void Game::DrawImGui()
 {
 	if (ImGui::CollapsingHeader("Edit Mode"))
@@ -418,7 +431,7 @@ void Game::ExitEditMode()
 
 void Game::ProcessMouseInput(sf::Mouse::Button pressedButton)
 {
-	if (ImGui::IsWindowHovered())
+	if (ImGui::IsWindowHovered() || ImGui::IsWindowFocused())
 	{
 		return;
 	}
@@ -524,7 +537,11 @@ void Game::ProcessMouseInput(sf::Mouse::Button pressedButton)
 EnemyEntity* Game::CreateEnemyAtPosition(sf::Vector2i position)
 {
 	EnemyEntity* newEnemy = new EnemyEntity(*this);
-	newEnemy->SetName("Enemy");
+
+	std::ostringstream stringStream;
+	stringStream << "Enemy_" << m_enemies.size();
+
+	newEnemy->SetName(stringStream.str());
 	newEnemy->SetGridCoordinates(position.x, position.y);
 	return newEnemy;
 }
