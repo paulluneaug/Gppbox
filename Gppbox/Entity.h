@@ -45,13 +45,15 @@ private:
 
 	bool m_jumpInput;
 
+	float m_health;
+
 	// Collisions
 	sf::Vector2i m_size;
 
 	std::pair<int, int> m_xOffsets;
 
 public:
-	Entity(Game& r_game, sf::Vector2i size);
+	Entity(Game& r_game, sf::Vector2i size, float health);
 
 	void SetCoordinates(float x, float y);
 	void SetGridCoordinates(int x, int y);
@@ -62,6 +64,11 @@ public:
 	void SetJumpInput(bool state);
 
 	virtual bool DrawImGui();
+
+	bool CollidesWithPoint(float x, float y);
+
+	void TakeDamage(float damage);
+	bool IsAlive();
 
 private:
 

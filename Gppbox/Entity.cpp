@@ -7,7 +7,7 @@
 #include "GlobalParameters.h"
 
 
-Entity::Entity(Game& game, sf::Vector2i size) :
+Entity::Entity(Game& game, sf::Vector2i size, float health) :
 	m_game(game),
 	m_grounded(true),
 	m_size(size),
@@ -16,7 +16,8 @@ Entity::Entity(Game& game, sf::Vector2i size) :
 	m_freeze(false),
 	m_groundFriction(DEFAULT_GROUND_FRICTION),
 	m_airFriction(DEFAULT_AIR_FRICTION),
-	m_jumpInput(false)
+	m_jumpInput(false),
+	m_health(health)
 {
 	sf::Texture texture = {};
 	texture.loadFromFile("res/Player.png");
@@ -69,7 +70,7 @@ void Entity::SetJumpInput(bool state)
 
 void Entity::Update(float deltaTime)
 {
-	if (m_freeze) 
+	if (m_freeze || !IsAlive())
 	{
 		return;
 	}
@@ -82,16 +83,17 @@ void Entity::UpdatePosition(float deltaTime)
 {
 	TryJump();
 
-	Dx += std::clamp(Input.x * m_lateralSpeed, -m_maxSpeed, m_maxSpeed);
+	Dx = std::clamp(Dx + Input.x * m_lateralSpeed, -m_maxSpeed, m_maxSpeed);
 
-	Rx += Dx * deltaTime;
-	Ry += Dy * deltaTime;
 
 	float friction = m_grounded ? m_groundFriction : m_airFriction;
 
-	Dx *= friction;
+	Dx *= std::powf(friction, deltaTime * 60); // Based on 60 frames/seconds
 	Dy += GlobalParameters::GRAVITY * deltaTime;
 	Dy *= std::powf(m_airFriction, deltaTime);
+
+	Rx += Dx * deltaTime;
+	Ry += Dy * deltaTime;
 
 	ResolvePhysics(deltaTime);
 
@@ -226,10 +228,14 @@ bool Entity::HasCollisionWithCell(int cellX, int cellY)
 	return m_game.IsWall(cellX, cellY);
 }
 
-void Entity::Draw(sf::RenderWindow& window)
+void Entity::Draw(sf::RenderWindow& r_window)
 {
+	if (!IsAlive())
+	{
+		return;
+	}
 	m_sprite->setPosition({ Xx, Yy });
-	window.draw(*m_sprite);
+	r_window.draw(*m_sprite);
 }
 
 bool Entity::DrawImGui()
@@ -250,14 +256,15 @@ bool Entity::DrawImGui()
 
 		ImGui::Text("Grid coordinates : (%i ; %i)", GridX, GridY);
 		ImGui::Text("Coordinates in cell : (%.2f ; %.2f)", Rx, Ry);
+		ImGui::Text("Velocity : (%.2f ; %.2f)", Dx, Dy);
 
 
 		ImGui::Separator();
 
 		ImGui::Text("Controller Settings");
 		ImGui::DragFloat("Jump Force", &m_jumpForce);
-		ImGui::DragFloat("Ground Friction", &m_groundFriction);
-		ImGui::DragFloat("Air Friction", &m_airFriction);
+		ImGui::SliderFloat("Ground Friction", &m_groundFriction, 0.0f, 1.0f);
+		ImGui::SliderFloat("Air Friction", &m_airFriction, 0.0f, 1.0f);
 
 		ImGui::Spacing();
 
@@ -267,4 +274,23 @@ bool Entity::DrawImGui()
 		ImGui::TreePop();
 	}
 	return false;
+}
+
+bool Entity::CollidesWithPoint(float x, float y)
+{
+	float cornerX = Xx + m_xOffsets.first;
+	float cornerY = Yy;
+
+	return cornerX <= x && x <= cornerX + m_size.x
+		&& cornerY <= y && y <= cornerY - m_size.y;
+}
+
+void Entity::TakeDamage(float damage)
+{
+	m_health -= damage;
+}
+
+bool Entity::IsAlive()
+{
+	return m_health > 0.0f;
 }
