@@ -59,8 +59,8 @@ public:
 	void SetGridCoordinates(int x, int y);
 	void SetName(const std::string& name);
 
-	void Update(float deltaTime);
-	void Draw(sf::RenderWindow& r_window);
+	virtual void Update(float deltaTime);
+	virtual void Draw(sf::RenderWindow& r_window);
 	void SetJumpInput(bool state);
 
 	virtual bool DrawImGui();

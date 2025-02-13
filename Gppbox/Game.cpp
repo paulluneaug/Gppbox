@@ -111,11 +111,16 @@ void Game::PollInput(double dt)
 
 	}
 
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
+	bool rightButtonPressed = sf::Mouse::isButtonPressed(sf::Mouse::Right);
+	bool leftButtonPressed = sf::Mouse::isButtonPressed(sf::Mouse::Left);
+
+	m_player->SetShootState(leftButtonPressed);
+
+	if (rightButtonPressed)
 	{
 		ProcessMouseInput(sf::Mouse::Right);
 	}
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+	if (leftButtonPressed)
 	{
 		ProcessMouseInput(sf::Mouse::Left);
 	}
@@ -200,13 +205,18 @@ bool Game::IsWall(sf::Vector2i position)
 	return IsWall(position.x, position.y);
 }
 
-bool Game::CollidesWithEnemyAtPoint(float x, float y, Entity* o_hitEnemy)
+bool Game::CollidesWithEnemyAtPoint(float x, float y, Entity** o_hitEnemy)
 {
 	for (Entity* enemy : m_enemies)
-	{
+	{	
+		if (!enemy->IsAlive()) 
+		{
+			continue;
+		}
+
 		if (enemy->CollidesWithPoint(x, y)) 
 		{
-			o_hitEnemy = enemy;
+			*o_hitEnemy = enemy;
 			return true;
 		}
 	}
@@ -436,11 +446,15 @@ void Game::ProcessMouseInput(sf::Mouse::Button pressedButton)
 		return;
 	}
 
-	if (!m_editMode)
+	if (m_editMode)
 	{
-		return;
+		ProcessMouseInput_EditMode(pressedButton);
 	}
 
+}
+
+void Game::ProcessMouseInput_EditMode(sf::Mouse::Button pressedButton)
+{
 	bool destroyObject = false;
 
 	switch (pressedButton)

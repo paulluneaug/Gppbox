@@ -12,12 +12,33 @@ void Vector2fUtils::ClampMagnitude(sf::Vector2f& r_vec, float min, float max)
 		return;
 	}
 	float wantedMagnitude = tooShort ? min : max;
-	r_vec = r_vec / (std::sqrt(sqrMagnitude) * wantedMagnitude);
+	r_vec = Normalized(r_vec) * wantedMagnitude;
 }
 
 float Vector2fUtils::SqrMagnitude(const sf::Vector2f& vec)
 {
 	return vec.x * vec.x + vec.y * vec.y;
+}
+
+float Vector2fUtils::Magnitude(const sf::Vector2f& vec)
+{
+	return std::sqrt(SqrMagnitude(vec));
+}
+
+float Vector2fUtils::SqrDistance(const sf::Vector2f& from, const sf::Vector2f& to)
+{
+	return SqrMagnitude(to - from);
+}
+
+float Vector2fUtils::Distance(const sf::Vector2f& from, const sf::Vector2f& to)
+{
+	return std::sqrt(SqrDistance(from, to));
+}
+
+sf::Vector2f Vector2fUtils::Normalized(const sf::Vector2f& vec)
+{
+	float magnitude = Magnitude(vec);
+	return	sf::Vector2f{ vec.x / magnitude, vec.y / magnitude };
 }
 
 float Vector2fUtils::Dot(const sf::Vector2f& a, const sf::Vector2f& b)

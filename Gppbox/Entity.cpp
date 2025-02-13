@@ -279,10 +279,10 @@ bool Entity::DrawImGui()
 bool Entity::CollidesWithPoint(float x, float y)
 {
 	float cornerX = Xx + m_xOffsets.first;
-	float cornerY = Yy;
+	float cornerY = Yy - m_size.y * Consts::GRID_SIZE;
 
-	return cornerX <= x && x <= cornerX + m_size.x
-		&& cornerY <= y && y <= cornerY - m_size.y;
+	return cornerX <= x && x <= cornerX + m_size.x * Consts::GRID_SIZE
+		&& cornerY <= y && y <= cornerY + m_size.y * Consts::GRID_SIZE;
 }
 
 void Entity::TakeDamage(float damage)

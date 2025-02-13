@@ -74,7 +74,7 @@ public:
 	bool IsWall(int cx, int cy);
 	bool IsWall(sf::Vector2i position);
 
-	bool CollidesWithEnemyAtPoint(float x, float y, Entity* o_hitEnemy);
+	bool CollidesWithEnemyAtPoint(float x, float y, Entity** o_hitEnemy);
 
 	void DrawImGui();
 
@@ -92,6 +92,7 @@ private:
 	void EnterEditMode();
 	void ExitEditMode();
 	void ProcessMouseInput(sf::Mouse::Button pressedButton);
+	void ProcessMouseInput_EditMode(sf::Mouse::Button pressedButton);
 	EnemyEntity* CreateEnemyAtPosition(sf::Vector2i position);
 
 	bool IsEnemyAtPosition(sf::Vector2i position);

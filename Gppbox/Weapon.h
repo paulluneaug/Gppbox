@@ -16,5 +16,7 @@ public:
 	virtual void OnWeaponSelected() = 0;
 	virtual void OnWeaponUnselected() = 0;
 
+	virtual void Draw(sf::RenderWindow& r_window) = 0;
+
 };
 
