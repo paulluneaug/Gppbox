@@ -34,8 +34,6 @@ Entity::Entity(Game& game, sf::Vector2i size, float health) :
 	m_xOffsets = (size.x & 1) == 0 ?
 		std::pair<int, int>{ -size.x / 2, size.x / 2} :
 		std::pair<int, int>{ -size.x / 2, size.x / 2 + 1 };
-
-	std::cout << "X offsets : " << origin.x << "; " << origin.y << std::endl;
 }
 
 void Entity::SetCoordinates(float x, float y)
