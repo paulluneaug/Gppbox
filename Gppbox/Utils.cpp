@@ -1,8 +1,8 @@
 #include "Utils.h"
-#include <cmath>
 #include <algorithm>
+#include <cmath>
 
-void Vector2fUtils::ClampMagnitude(sf::Vector2f& r_vec, float min, float max)
+void Utils::ClampMagnitude(sf::Vector2f& r_vec, float min, float max)
 {
 	float sqrMagnitude = SqrMagnitude(r_vec);
 	bool tooShort = sqrMagnitude < min * min;
@@ -12,41 +12,61 @@ void Vector2fUtils::ClampMagnitude(sf::Vector2f& r_vec, float min, float max)
 		return;
 	}
 	float wantedMagnitude = tooShort ? min : max;
-	r_vec = Normalized(r_vec) * wantedMagnitude;
+	r_vec = Normalize(r_vec) * wantedMagnitude;
 }
 
-float Vector2fUtils::SqrMagnitude(const sf::Vector2f& vec)
+float Utils::SqrMagnitude(const sf::Vector2f& vec)
 {
-	return vec.x * vec.x + vec.y * vec.y;
+	return SqrMagnitude(vec.x, vec.y);
 }
 
-float Vector2fUtils::Magnitude(const sf::Vector2f& vec)
+float Utils::SqrMagnitude(float x, float y)
 {
-	return std::sqrt(SqrMagnitude(vec));
+	return x * x + y * y;
 }
 
-float Vector2fUtils::SqrDistance(const sf::Vector2f& from, const sf::Vector2f& to)
+float Utils::Magnitude(const sf::Vector2f& vec)
 {
-	return SqrMagnitude(to - from);
+	return Magnitude(vec.x, vec.y);
 }
 
-float Vector2fUtils::Distance(const sf::Vector2f& from, const sf::Vector2f& to)
+float Utils::Magnitude(float x, float y)
 {
-	return std::sqrt(SqrDistance(from, to));
+	return std::sqrt(SqrMagnitude(x, y));
 }
 
-sf::Vector2f Vector2fUtils::Normalized(const sf::Vector2f& vec)
+float Utils::SqrDistance(const sf::Vector2f& from, const sf::Vector2f& to)
+{
+	return SqrDistance(from.x, from.y, to.x, to.y);
+}
+
+float Utils::SqrDistance(float xFrom, float yFrom, float xTo, float yTo)
+{
+	return SqrMagnitude(xTo - xFrom, yTo - yFrom);
+}
+
+float Utils::Distance(const sf::Vector2f& from, const sf::Vector2f& to)
+{
+	return Distance(from.x, from.y, to.x, to.y);
+}
+
+float Utils::Distance(float xFrom, float yFrom, float xTo, float yTo)
+{
+	return std::sqrt(SqrDistance(xFrom, yFrom, xTo, yTo));
+}
+
+sf::Vector2f Utils::Normalize(const sf::Vector2f& vec)
 {
 	float magnitude = Magnitude(vec);
 	return	sf::Vector2f{ vec.x / magnitude, vec.y / magnitude };
 }
 
-float Vector2fUtils::Dot(const sf::Vector2f& a, const sf::Vector2f& b)
+float Utils::Dot(const sf::Vector2f& a, const sf::Vector2f& b)
 {
 	return a.x * b.x + a.y * b.y;
 }
 
-float Vector2fUtils::Angle(const sf::Vector2f& from, const sf::Vector2f& to)
+float Utils::Angle(const sf::Vector2f& from, const sf::Vector2f& to)
 {
 	float num = std::sqrt(SqrMagnitude(from) * SqrMagnitude(to));
 	if (num < 1E-15f)
@@ -55,5 +75,22 @@ float Vector2fUtils::Angle(const sf::Vector2f& from, const sf::Vector2f& to)
 	}
 
 	float num2 = std::clamp(Dot(from, to) / num, -1.0f, 1.0f);
-	return std::acos(num2) * 57.29578f;
+	return std::acos(num2);// *57.29578f;
+}
+
+float Utils::SignedAngle(const sf::Vector2f& from, const sf::Vector2f& to)
+{
+	float angle = Angle(from, to);
+	float sign = Sign(from.x * to.y - from.y * to.x);
+	return angle * sign;
+}
+
+float Utils::Sign(float val)
+{
+	return val < 0.0f ? -1.0f : 1.0f;
+}
+
+int Utils::Sign(int val)
+{
+	return val < 0 ? -1 : 1;
 }
