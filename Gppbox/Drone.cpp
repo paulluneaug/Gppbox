@@ -81,7 +81,9 @@ bool Drone::Shoot()
 		return false;
 	}
 
-	Vector2f toTarget = { target->Xx - m_position.x, -(target->Yy - m_position.y) };
+	Vector2f targetCenter = target->GetCenter();
+	Vector2f toTarget = targetCenter - m_position;
+	toTarget.y = -toTarget.y;
 
 	if (Utils::SqrMagnitude(toTarget) > MAX_RANGE * MAX_RANGE) 
 	{

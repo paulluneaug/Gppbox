@@ -292,3 +292,12 @@ bool Entity::IsAlive()
 {
 	return m_health > 0.0f;
 }
+
+Vector2f Entity::GetCenter()
+{
+	return 
+	{ 
+		Xx + (m_xOffsets.first + m_size.x * Consts::GRID_SIZE / 2),
+		Yy - (m_size.y * Consts::GRID_SIZE / 2)
+	};
+}

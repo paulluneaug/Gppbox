@@ -70,6 +70,8 @@ public:
 	void TakeDamage(float damage);
 	bool IsAlive();
 
+	Vector2f GetCenter();
+
 private:
 
 	void TryJump();

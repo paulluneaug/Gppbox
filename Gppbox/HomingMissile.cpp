@@ -28,12 +28,12 @@ void HomingMissile::UpdateVelocity(float deltaTime)
 
 	if (m_target != nullptr && m_target->IsAlive()) 
 	{
-		sf::Vector2f toTarget = { m_target->Xx - m_position.x, m_target->Yy - m_position.y };
+		sf::Vector2f targetCenter = m_target->GetCenter();
+		sf::Vector2f toTarget = targetCenter - m_position;
 		sf::Vector2f currentDirection = { cos(m_angle), sin(m_angle) };
 
 		float angleDelta = Utils::SignedAngle(currentDirection, toTarget);
 		float maxDelta = MAX_ROTATION_SPEED * deltaTime;
 		m_angle += std::clamp(angleDelta, -maxDelta, maxDelta);
 	}
-
 }
