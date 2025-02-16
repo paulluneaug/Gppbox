@@ -7,7 +7,7 @@ class PlayerEntity : public Entity
 {
 	typedef Entity Super;
 
-	static constexpr int WEAPONS_COUNT = 2;
+	static constexpr int WEAPONS_COUNT = 3;
 
 private:
 	Weapon* m_weapons[WEAPONS_COUNT];

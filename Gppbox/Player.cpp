@@ -4,6 +4,7 @@
 #include "C.hpp"
 #include "Rifle.h"
 #include "MissileLauncher.h"
+#include "Drone.h"
 
 PlayerEntity::PlayerEntity(Game& r_game) :
 	Super(r_game, { 1, 1 }, 3.0f),
@@ -13,6 +14,7 @@ PlayerEntity::PlayerEntity(Game& r_game) :
 {
 	m_weapons[0] = new Rifle(r_game, 0.1f);
 	m_weapons[1] = new MissileLauncher(r_game, 0.1f);
+	m_weapons[2] = new Drone(r_game, 0.1f, {0.0f, 0.0f});
 
 	m_weapons[m_selectedWeaponIndex]->OnWeaponSelected();
 }
