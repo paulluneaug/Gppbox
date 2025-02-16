@@ -11,13 +11,10 @@ class Rifle : public Weapon
 private:
 	static constexpr float KNOCKBACK = 0.1f * Consts::GRID_SIZE;
 
-private:
-	std::vector<Projectile*> m_shotProjectiles;
-
 public:
 	Rifle(Game& r_game, float reloadTime);
 
-	bool Update(float deltaTime, float posX, float posY, float dirX, float dirY) override;
+	virtual bool TryShoot(float deltaTime, float posX, float posY, float dirX, float dirY) override;
 
 	virtual void Draw(sf::RenderWindow& r_window) override;
 

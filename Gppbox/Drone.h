@@ -16,18 +16,16 @@ private:
 	sf::Shape* m_sprite;
 
 	Vector2f m_position;
-	std::vector<Projectile*> m_shotProjectiles;
 
 public:
 	Drone(Game& r_game, float reloadTime, Vector2f startPosition);
 	virtual ~Drone();
 
 	virtual bool Update(float deltaTime, float posX, float posY, float dirX, float dirY) override;
+	virtual bool TryShoot(float deltaTime, float posX, float posY, float dirX, float dirY) override;
 	virtual void Draw(sf::RenderWindow& r_window) override;
 
 	virtual Vector2f GetKnockback() override;
 
-private:
-	bool Shoot();
 };
 

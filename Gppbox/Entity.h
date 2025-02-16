@@ -65,12 +65,12 @@ public:
 
 	virtual bool DrawImGui();
 
-	bool CollidesWithPoint(float x, float y);
+	bool CollidesWithPoint(float x, float y) const;
 
 	void TakeDamage(float damage);
-	bool IsAlive();
+	bool IsAlive() const;
 
-	Vector2f GetCenter();
+	Vector2f GetCenter() const;
 
 private:
 
@@ -83,7 +83,7 @@ protected:
 	bool CollidesLeft(float deltaTime);
 	bool CollidesRight(float deltaTime);
 
-	bool HasCollisionWithCell(int x, int y);
+	bool HasCollisionWithCell(int x, int y) const;
 
 };
 

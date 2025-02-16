@@ -221,7 +221,7 @@ bool Entity::CollidesRight(float deltaTime)
 	return false;
 }
 
-bool Entity::HasCollisionWithCell(int cellX, int cellY)
+bool Entity::HasCollisionWithCell(int cellX, int cellY) const
 {
 	return m_game.IsWall(cellX, cellY);
 }
@@ -274,7 +274,7 @@ bool Entity::DrawImGui()
 	return false;
 }
 
-bool Entity::CollidesWithPoint(float x, float y)
+bool Entity::CollidesWithPoint(float x, float y) const
 {
 	float cornerX = Xx + m_xOffsets.first;
 	float cornerY = Yy - m_size.y * Consts::GRID_SIZE;
@@ -288,12 +288,12 @@ void Entity::TakeDamage(float damage)
 	m_health -= damage;
 }
 
-bool Entity::IsAlive()
+bool Entity::IsAlive() const
 {
 	return m_health > 0.0f;
 }
 
-Vector2f Entity::GetCenter()
+Vector2f Entity::GetCenter() const
 {
 	return 
 	{ 
