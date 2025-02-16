@@ -1,7 +1,6 @@
 #include "MissileLauncher.h"
 MissileLauncher::MissileLauncher(Game& r_game, float reloadTime) :
-	Super(r_game),
-	m_reloadTimer(Timer{reloadTime,true})
+	Super(r_game, reloadTime)
 {
 }
 
@@ -35,16 +34,6 @@ void MissileLauncher::Update(float deltaTime, float posX, float posY, float dirX
 		m_shotMissiles.erase(m_shotMissiles.begin() + missileToDeleteIndex);
 		delete missile;
 	}
-}
-
-void MissileLauncher::OnWeaponSelected()
-{
-	m_reloadTimer.Start();
-}
-
-void MissileLauncher::OnWeaponUnselected()
-{
-	m_reloadTimer.Stop();
 }
 
 void MissileLauncher::Draw(sf::RenderWindow& r_window)

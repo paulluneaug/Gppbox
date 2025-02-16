@@ -1,8 +1,7 @@
 #include "Rifle.h"
 
 Rifle::Rifle(Game& r_game, float reloadTime) : 
-	Weapon(r_game),
-	m_reloadTimer(Timer{reloadTime, true})
+	Weapon(r_game, reloadTime)
 {
 }
 
@@ -35,16 +34,6 @@ void Rifle::Update(float deltaTime, float posX, float posY, float dirX, float di
 		m_shotProjectiles.erase(m_shotProjectiles.begin() + projectileToDeleteIndex);
 		delete projectile;
 	}
-}
-
-void Rifle::OnWeaponSelected()
-{
-	m_reloadTimer.Start();
-}
-
-void Rifle::OnWeaponUnselected()
-{
-	m_reloadTimer.Stop();
 }
 
 void Rifle::Draw(sf::RenderWindow& r_window)
