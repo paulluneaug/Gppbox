@@ -16,16 +16,17 @@ Drone::~Drone()
 	delete m_sprite;
 }
 
-void Drone::Update(float deltaTime, float posX, float posY, float dirX, float dirY)
+bool Drone::Update(float deltaTime, float posX, float posY, float dirX, float dirY)
 {
 	Vector2f toPLayer = { posX - m_position.x, posY - m_position.y };
 	Vector2f targetPosition = Vector2f{ posX, posY } - Utils::Normalize(toPLayer) * TARGET_DISTANCE_FROM_PLAYER;
 
 	m_position = Utils::SmoothLerp(m_position, targetPosition, deltaTime, LERP_HALF_TIME);
 
+	bool shot = false;
 	if (m_reloadTimer.Update(deltaTime))
 	{
-		Shoot();
+		shot = Shoot();
 	}
 
 	// Only deletes one projectile per frame
@@ -49,6 +50,8 @@ void Drone::Update(float deltaTime, float posX, float posY, float dirX, float di
 		m_shotProjectiles.erase(m_shotProjectiles.begin() + projectileToDeleteIndex);
 		delete projectile;
 	}
+
+	return shot;
 }
 
 void Drone::Draw(sf::RenderWindow& r_window)
@@ -65,21 +68,27 @@ void Drone::Draw(sf::RenderWindow& r_window)
 	}
 }
 
-void Drone::Shoot()
+Vector2f Drone::GetKnockback()
+{
+	return { 0.0f, 0.0f };
+}
+
+bool Drone::Shoot()
 {
 	Entity* target = m_game.GetClosestEnemy(m_position.x, m_position.y);
 	if (target == nullptr || !target->IsAlive())
 	{
-		return;
+		return false;
 	}
 
 	Vector2f toTarget = { target->Xx - m_position.x, -(target->Yy - m_position.y) };
 
 	if (Utils::SqrMagnitude(toTarget) > MAX_RANGE * MAX_RANGE) 
 	{
-		return;
+		return false;
 	}
 
 	Projectile* newProjectile = new Projectile(m_game, m_position, Utils::Normalize(toTarget));
 	m_shotProjectiles.push_back(newProjectile);
+	return true;
 }

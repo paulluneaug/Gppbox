@@ -1,16 +1,18 @@
 #include "Rifle.h"
 
 Rifle::Rifle(Game& r_game, float reloadTime) : 
-	Weapon(r_game, reloadTime)
+	Super(r_game, reloadTime)
 {
 }
 
-void Rifle::Update(float deltaTime, float posX, float posY, float dirX, float dirY)
+bool Rifle::Update(float deltaTime, float posX, float posY, float dirX, float dirY)
 {
+	bool shot = false;
 	if (m_shouldShoot && m_reloadTimer.Update(deltaTime))
 	{
 		Projectile* newProjectile = new Projectile(m_game, { posX, posY }, { dirX, dirY });
 		m_shotProjectiles.push_back(newProjectile);
+		shot = true;
 	}
 
 	// Only deletes one projectile per frame
@@ -34,6 +36,8 @@ void Rifle::Update(float deltaTime, float posX, float posY, float dirX, float di
 		m_shotProjectiles.erase(m_shotProjectiles.begin() + projectileToDeleteIndex);
 		delete projectile;
 	}
+
+	return shot;
 }
 
 void Rifle::Draw(sf::RenderWindow& r_window)
@@ -45,4 +49,9 @@ void Rifle::Draw(sf::RenderWindow& r_window)
 			projectile->Draw(r_window);
 		}
 	}
+}
+
+Vector2f Rifle::GetKnockback()
+{
+	return { KNOCKBACK, 0.0f };
 }

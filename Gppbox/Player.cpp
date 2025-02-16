@@ -5,6 +5,7 @@
 #include "Rifle.h"
 #include "MissileLauncher.h"
 #include "Drone.h"
+#include "Utils.h"
 
 PlayerEntity::PlayerEntity(Game& r_game) :
 	Super(r_game, { 1, 1 }, 3.0f),
@@ -31,15 +32,28 @@ void PlayerEntity::Update(float deltaTime)
 {
 	Super::Update(deltaTime);
 
+	if (Input.x != 0) 
+	{
+		m_facingDirection = Input.x;
+	}
+
+	Vector2f knockback = { 0.0f, 0.0f };
 	for (Weapon* weapon : m_weapons) 
 	{
-		weapon->Update(
+		bool shot = weapon->Update(
 			deltaTime,
 			Xx + m_weaponOffset.x,
 			Yy - m_weaponOffset.y,
-			std::copysign(1, Dx),
+			Utils::Sign(m_facingDirection),
 			0);
+
+		if (shot) 
+		{
+			knockback += weapon->GetKnockback();
+		}
 	}
+
+	Dx += knockback.x * -Utils::Sign(m_facingDirection);
 }
 
 void PlayerEntity::Draw(sf::RenderWindow& r_window)

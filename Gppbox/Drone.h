@@ -22,10 +22,12 @@ public:
 	Drone(Game& r_game, float reloadTime, Vector2f startPosition);
 	virtual ~Drone();
 
-	virtual void Update(float deltaTime, float posX, float posY, float dirX, float dirY) override;
+	virtual bool Update(float deltaTime, float posX, float posY, float dirX, float dirY) override;
 	virtual void Draw(sf::RenderWindow& r_window) override;
 
+	virtual Vector2f GetKnockback() override;
+
 private:
-	void Shoot();
+	bool Shoot();
 };
 

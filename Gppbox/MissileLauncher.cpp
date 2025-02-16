@@ -4,13 +4,15 @@ MissileLauncher::MissileLauncher(Game& r_game, float reloadTime) :
 {
 }
 
-void MissileLauncher::Update(float deltaTime, float posX, float posY, float dirX, float dirY)
+bool MissileLauncher::Update(float deltaTime, float posX, float posY, float dirX, float dirY)
 {
+	bool shot = false;
 	if (m_shouldShoot && m_reloadTimer.Update(deltaTime))
 	{
 		Entity* target = m_game.GetClosestEnemy(posX, posY);
 		HomingMissile* newProjectile = new HomingMissile(m_game, { posX, posY }, { dirX, dirY }, target);
 		m_shotMissiles.push_back(newProjectile);
+		shot = true;
 	}
 
 	// Only deletes one projectile per frame
@@ -34,6 +36,7 @@ void MissileLauncher::Update(float deltaTime, float posX, float posY, float dirX
 		m_shotMissiles.erase(m_shotMissiles.begin() + missileToDeleteIndex);
 		delete missile;
 	}
+	return shot;
 }
 
 void MissileLauncher::Draw(sf::RenderWindow& r_window)
@@ -45,4 +48,9 @@ void MissileLauncher::Draw(sf::RenderWindow& r_window)
 			missile->Draw(r_window);
 		}
 	}
+}
+
+Vector2f MissileLauncher::GetKnockback()
+{
+	return { KNOCKBACK, 0.0f };
 }

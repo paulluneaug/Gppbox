@@ -16,6 +16,7 @@ private:
 	sf::Vector2f m_weaponOffset;
 
 	bool m_shootInput;
+	float m_facingDirection;
 
 public:
 	PlayerEntity(Game& r_game);
