@@ -1,6 +1,8 @@
 #include "Utils.h"
 #include <algorithm>
 #include <cmath>
+#include <map>
+#include <iterator>
 
 void Utils::ClampMagnitude(sf::Vector2f& r_vec, float min, float max)
 {
@@ -102,9 +104,76 @@ float Utils::SmoothLerp(float a, float b, float deltaTime, float halfLife)
 
 sf::Vector2f Utils::SmoothLerp(const sf::Vector2f& a, const sf::Vector2f& b, float deltaTime, float halfLife)
 {
-	return 
+	return
 	{
 		SmoothLerp(a.x, b.x, deltaTime, halfLife),
 		SmoothLerp(a.y, b.y, deltaTime, halfLife)
 	};
+}
+
+std::vector<std::array<float, 2>> Utils::Raycast(sf::Vector2f pos, sf::Vector2f dir, float maxDist, const sf::Vector2f& cellsSize)
+{
+	pos = { pos.x / cellsSize.x, pos.y / cellsSize.y };
+
+	std::map<float, std::array<float, 2>> hitPoints;
+
+	if (dir.x != 0.0f)
+	{
+		float deltaYX = dir.y / dir.x;
+		float offsetYX = pos.y - pos.x * deltaYX;
+
+		float cubeX = dir.x > 0.0f ? ceil(pos.x) : floor(pos.x);
+		while (true)
+		{
+			sf::Vector2f collision{ cubeX, cubeX * deltaYX + offsetYX };
+
+			float sqrDistance = SqrDistance(pos, collision);
+			if (sqrDistance > maxDist * maxDist)
+			{
+				break;
+			}
+
+			hitPoints[sqrDistance] =
+			{
+				cubeX,// - (dir.x < 0.0f ? 1 : 0),
+				collision.y
+			};
+			cubeX += Sign(dir.x);
+		}
+	}
+
+	if (dir.y != 0.0f)
+	{
+		float deltaXY = dir.x / dir.y;
+		float offsetXY = pos.x - pos.y * deltaXY;
+
+		float cubeY = dir.y > 0.0f ? ceil(pos.y) : floor(pos.y);
+		while (true)
+		{
+			sf::Vector2f collision{ cubeY * deltaXY + offsetXY, cubeY };
+			float sqrDistance = SqrDistance(pos, collision);
+			if (sqrDistance > maxDist * maxDist)
+			{
+				break;
+			}
+
+			hitPoints[sqrDistance] =
+			{
+
+				collision.x,
+				cubeY// - (dir.y < 0.0f ? 1 : 0)
+			};
+			cubeY += Sign(dir.y);
+		}
+	}
+
+
+	std::vector<std::array<float, 2>> result;
+	std::transform(
+		hitPoints.begin(), hitPoints.end(),
+		std::back_inserter(result),
+		[](auto& v) {return v.second; });
+
+
+	return result;
 }

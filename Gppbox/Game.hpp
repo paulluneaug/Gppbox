@@ -53,6 +53,11 @@ private:
 	bool m_editMode;
 	PlacableObject m_selectedObject;
 
+	// Debug
+	sf::Vector2f m_raycastOrigin;
+	float m_raycastAngle;
+	float m_raycastDistance;
+
 
 public:
 	ParticleManager beforeParts;

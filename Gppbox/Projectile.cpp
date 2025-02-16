@@ -42,29 +42,34 @@ void Projectile::Update(float deltaTime)
 
 	m_speed = std::clamp(m_speed, 0.0f, m_maxSpeed);
 
-	sf::Vector2f offset = 
-	{ 
-		cos(m_angle) * deltaTime * m_speed,
-		sin(m_angle) * deltaTime * m_speed 
+	sf::Vector2f direction =
+	{
+		cos(m_angle),
+		sin(m_angle)
 	};
 
 	bool collided = false;
 
-	if (Utils::SqrMagnitude(offset) > Consts::GRID_SIZE) 
+	for (std::array<float, 2>& hitPoint : Utils::Raycast(m_position, direction, deltaTime * m_speed / Consts::GRID_SIZE, { Consts::GRID_SIZE,Consts::GRID_SIZE }))
 	{
-		sf::Vector2f step = Utils::Normalize(offset) * float(Consts::GRID_SIZE);
-		while (Utils::SqrMagnitude(offset) > Consts::GRID_SIZE * Consts::GRID_SIZE && !collided)
+		if (CheckCollisions(hitPoint[0] * Consts::GRID_SIZE, hitPoint[1] * Consts::GRID_SIZE)) 
 		{
-			offset -= step;
-			m_position += step;
-			collided |= CheckCollisions();
+			collided = true;
+			break;
 		}
 	}
 
+
 	if (!collided) 
 	{
+
+		sf::Vector2f offset =
+		{
+			direction.x * deltaTime * m_speed,
+			direction.y * deltaTime * m_speed
+		};
 		m_position += offset;
-		collided |= CheckCollisions();
+		collided |= CheckCollisions(m_position);
 	}
 
 	if (collided)
@@ -89,28 +94,33 @@ void Projectile::UpdateVelocity(float deltaTime)
 {
 }
 
-bool Projectile::CollidesWithWall()
+bool Projectile::CollidesWithWall(float x, float y)
 {
-	return m_game.IsWall(int(m_position.x / Consts::GRID_SIZE), int(m_position.y / Consts::GRID_SIZE));
+	return m_game.IsWall(int(x / Consts::GRID_SIZE), int(y / Consts::GRID_SIZE));
 }
 
-bool Projectile::CollidesWithEnemy(Entity** o_hitEnemy)
+bool Projectile::CollidesWithEnemy(float x, float y, Entity** o_hitEnemy)
 {
-	return m_game.CollidesWithEnemyAtPoint(m_position.x, m_position.y, o_hitEnemy);
+	return m_game.CollidesWithEnemyAtPoint(x, y, o_hitEnemy);
 }
 
-bool Projectile::CheckCollisions()
+bool Projectile::CheckCollisions(float x, float y)
 {
-	if (m_canCollideWithWalls && CollidesWithWall())
+	if (m_canCollideWithWalls && CollidesWithWall(x, y))
 	{
 		return true;
 	}
 
 	Entity* hitEnemy = nullptr;
-	if (CollidesWithEnemy(&hitEnemy))
+	if (CollidesWithEnemy(x, y, &hitEnemy))
 	{
 		hitEnemy->TakeDamage(m_damage);
 		return true;
 	}
 	return false;
+}
+
+bool Projectile::CheckCollisions(const Vector2f& position)
+{
+	return CheckCollisions(position.x, position.y);
 }

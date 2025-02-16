@@ -38,9 +38,10 @@ protected:
 	virtual void UpdateVelocity(float deltaTime);
 private :
 
-	bool CollidesWithWall();
-	bool CollidesWithEnemy(Entity** o_hitEnemy);
+	bool CollidesWithWall(float x, float y);
+	bool CollidesWithEnemy(float x, float y, Entity** o_hitEnemy);
 
-	bool CheckCollisions();
+	bool CheckCollisions(float x, float y);
+	bool CheckCollisions(const Vector2f& position);
 };
 

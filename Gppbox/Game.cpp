@@ -170,6 +170,39 @@ void Game::Draw(sf::RenderWindow& win) {
 
 
 	afterParts.draw(win);
+
+	float radius = 0.3f * Consts::GRID_SIZE;
+	sf::CircleShape dot = sf::CircleShape(radius);
+	dot.setOrigin({ radius , radius });
+	dot.setFillColor(Color::Red);
+
+	dot.setPosition(m_raycastOrigin);
+	win.draw(dot);
+
+	sf::Vector2f direction =
+	{
+		cos(m_raycastAngle),
+		sin(m_raycastAngle)
+	};
+
+	sf::Vector2f raycastEnd =
+	{
+		m_raycastOrigin.x + direction.x * m_raycastDistance * Consts::GRID_SIZE,
+		m_raycastOrigin.y + direction.y * m_raycastDistance * Consts::GRID_SIZE
+	};
+	dot.setPosition(raycastEnd);
+	win.draw(dot);
+
+	radius = 0.2f * Consts::GRID_SIZE;
+	dot.setRadius(radius);
+	dot.setOrigin({ radius , radius });
+	dot.setFillColor(Color::Cyan);
+
+	for (std::array<float, 2>& hitPoint : Utils::Raycast(m_raycastOrigin, direction, m_raycastDistance, { Consts::GRID_SIZE,Consts::GRID_SIZE }))
+	{
+		dot.setPosition({ hitPoint[0] * Consts::GRID_SIZE, hitPoint[1] * Consts::GRID_SIZE });
+		win.draw(dot);
+	}
 }
 
 
@@ -229,6 +262,19 @@ Entity* Game::GetClosestEnemy(float x, float y)
 
 void Game::DrawImGui()
 {
+	if (ImGui::CollapsingHeader("Raycast")) 
+	{
+		float origin[] = { m_raycastOrigin.x, m_raycastOrigin.y };
+		if (ImGui::DragFloat2("Origin", origin)) 
+		{
+			m_raycastOrigin.x = origin[0];
+			m_raycastOrigin.y = origin[1];
+		}
+
+		ImGui::SliderAngle("Angle", &m_raycastAngle);
+		ImGui::DragFloat("Dist", &m_raycastDistance, 1.0f, 0.0f);
+	}
+
 	if (ImGui::CollapsingHeader("Edit Mode"))
 	{
 		if (!m_editMode)

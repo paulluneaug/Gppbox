@@ -1,5 +1,7 @@
 #pragma once
 #include <SFML/System/Vector2.hpp>
+#include <vector>
+#include <array>
 
 class Utils
 {
@@ -31,5 +33,8 @@ public:
     /// <remarks>https://bsky.app/profile/freya.bsky.social/post/3klfoezuzil2l</remarks>
     static float SmoothLerp(float a, float b, float deltaTime, float halfLife);
     static sf::Vector2f SmoothLerp(const sf::Vector2f& a, const sf::Vector2f& b, float deltaTime, float halfLife);
+
+
+    static std::vector<std::array<float, 2>> Raycast(sf::Vector2f pos, sf::Vector2f dir, float maxDist, const sf::Vector2f& cellsSize = {1, 1});
 };
 
