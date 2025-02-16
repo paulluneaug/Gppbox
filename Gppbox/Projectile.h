@@ -29,6 +29,7 @@ protected:
 
 public:
 	Projectile(Game& r_game, Vector2f position, Vector2f direction, bool canCollideWithWalls = true);
+	virtual ~Projectile();
 	virtual void Update(float deltaTime);
 	void Draw(sf::RenderWindow& r_window);
 

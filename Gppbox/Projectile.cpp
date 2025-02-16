@@ -6,16 +6,21 @@
 Projectile::Projectile(Game& r_game, Vector2f position, Vector2f direction, bool canCollideWithWalls) :
 	m_game(r_game),
 	m_position(position),
-	m_angle(Utils::Angle(direction, { 1.0f, 0.0f })),
+	m_angle(Utils::SignedAngle(direction, { 1.0f, 0.0f })),
 	m_speed(Utils::Magnitude(direction) * DEFAULT_SPEED),
 	IsAlive(true),
 	m_damage(DEFAULT_DAMAGE),
 	m_canCollideWithWalls(canCollideWithWalls),
 	m_currentLifetime(0.0f)
 {
-	float radius = 0.2f;
-	m_sprite = new sf::CircleShape(radius * Consts::GRID_SIZE);
-	m_sprite->setOrigin({ radius * Consts::GRID_SIZE , radius * Consts::GRID_SIZE });
+	float radius = 0.2f * Consts::GRID_SIZE;
+	m_sprite = new sf::CircleShape(radius);
+	m_sprite->setOrigin({ radius , radius });
+}
+
+Projectile::~Projectile()
+{
+	delete m_sprite;
 }
 
 void Projectile::Update(float deltaTime)
@@ -45,10 +50,10 @@ void Projectile::Update(float deltaTime)
 
 	bool collided = false;
 
-	if (Utils::SqrMagnitude(offset) > 1.0f) 
+	if (Utils::SqrMagnitude(offset) > Consts::GRID_SIZE) 
 	{
-		sf::Vector2f step = Utils::Normalize(offset);
-		while (Utils::SqrMagnitude(offset) > 1.0f && !collided)
+		sf::Vector2f step = Utils::Normalize(offset) * float(Consts::GRID_SIZE);
+		while (Utils::SqrMagnitude(offset) > Consts::GRID_SIZE * Consts::GRID_SIZE && !collided)
 		{
 			offset -= step;
 			m_position += step;
