@@ -75,12 +75,12 @@ public:
 	bool IsWall(sf::Vector2i position);
 
 	bool CollidesWithEnemyAtPoint(float x, float y, Entity** o_hitEnemy);
+	Entity* GetClosestEnemy(float x, float y);
 
 	void DrawImGui();
 
 private:
 
-	void InitWalls();
 	void InitPlayer();
 
 	// Edit Mode

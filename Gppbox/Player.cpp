@@ -2,36 +2,65 @@
 #include <cmath>
 
 #include "C.hpp"
+#include "Rifle.h"
+#include "MissileLauncher.h"
 
 PlayerEntity::PlayerEntity(Game& r_game) :
 	Super(r_game, { 1, 1 }, 3.0f),
-	m_weapon(Rifle(r_game, 0.1f)),
 	m_weaponOffset({ 0.0f * Consts::GRID_SIZE , 0.5f * Consts::GRID_SIZE }),
-	m_shootInput(false)
+	m_shootInput(false),
+	m_selectedWeaponIndex(0)
 {
-	m_weapon.OnWeaponSelected();
-	m_weapon.SetShouldShoot(true);
+	m_weapons[0] = new Rifle(r_game, 0.1f);
+	m_weapons[1] = new MissileLauncher(r_game, 0.1f);
+
+	m_weapons[m_selectedWeaponIndex]->OnWeaponSelected();
+}
+
+PlayerEntity::~PlayerEntity()
+{
+	for (int iWeapon = 0; iWeapon < WEAPONS_COUNT; ++iWeapon) 
+	{
+		delete m_weapons[iWeapon];
+	}
 }
 
 void PlayerEntity::Update(float deltaTime)
 {
 	Super::Update(deltaTime);
-	m_weapon.Update(
-		deltaTime, 
-		Xx + m_weaponOffset.x, 
-		Yy - m_weaponOffset.y, 
-		std::copysign(1, Dx),
-		0);
+
+	for (Weapon* weapon : m_weapons) 
+	{
+		weapon->Update(
+			deltaTime,
+			Xx + m_weaponOffset.x,
+			Yy - m_weaponOffset.y,
+			std::copysign(1, Dx),
+			0);
+	}
 }
 
 void PlayerEntity::Draw(sf::RenderWindow& r_window)
 {
 	Super::Draw(r_window);
-	m_weapon.Draw(r_window);
+	for (Weapon* weapon : m_weapons)
+	{
+		weapon->Draw(r_window);
+	}
 }
 
 void PlayerEntity::SetShootState(bool shootState)
 {
 	m_shootInput = shootState;
-	m_weapon.SetShouldShoot(shootState);
+	for (Weapon* weapon : m_weapons)
+	{
+		weapon->SetShouldShoot(shootState);
+	}
+}
+
+void PlayerEntity::SelectNextWeapon()
+{
+	m_weapons[m_selectedWeaponIndex]->OnWeaponUnselected();
+	m_selectedWeaponIndex = (m_selectedWeaponIndex + 1) % WEAPONS_COUNT;
+	m_weapons[m_selectedWeaponIndex]->OnWeaponSelected();
 }

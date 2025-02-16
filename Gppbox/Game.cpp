@@ -11,6 +11,7 @@
 #include "Enemy.h"
 #include "Entity.h"
 #include "Player.h"
+#include "Utils.h"
 
 #include "GlobalParameters.h"
 
@@ -41,26 +42,6 @@ Game::~Game()
 	DeleteIfExists(m_backgroundShader);
 	DeleteIfExists(m_player);
 	ClearLevel();
-}
-
-void Game::InitWalls()
-{
-	for (int i = 0; i < 1280 / Consts::GRID_SIZE; ++i)
-		m_walls.push_back(Vector2i(i, lastLine));
-
-	m_walls.push_back(Vector2i(0, lastLine - 1));
-	m_walls.push_back(Vector2i(0, lastLine - 2));
-	m_walls.push_back(Vector2i(0, lastLine - 3));
-
-	m_walls.push_back(Vector2i(cols - 1, lastLine - 1));
-	m_walls.push_back(Vector2i(cols - 1, lastLine - 2));
-	m_walls.push_back(Vector2i(cols - 1, lastLine - 3));
-
-	m_walls.push_back(Vector2i(cols >> 2, lastLine - 2));
-	m_walls.push_back(Vector2i(cols >> 2, lastLine - 3));
-	m_walls.push_back(Vector2i(cols >> 2, lastLine - 4));
-	m_walls.push_back(Vector2i((cols >> 2) + 1, lastLine - 4));
-	CacheWalls();
 }
 
 void Game::InitPlayer()
@@ -107,8 +88,9 @@ void Game::PollInput(double dt)
 	bool rightPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D);
 	m_player->Input.x = (leftPressed ? -1 : 0) + (rightPressed ? 1 : 0);
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::T)) {
-
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) 
+	{
+		m_player->SelectNextWeapon();
 	}
 
 	bool rightButtonPressed = sf::Mouse::isButtonPressed(sf::Mouse::Right);
@@ -221,6 +203,28 @@ bool Game::CollidesWithEnemyAtPoint(float x, float y, Entity** o_hitEnemy)
 		}
 	}
 	return false;
+}
+
+Entity* Game::GetClosestEnemy(float x, float y)
+{
+	float closestDistance = FLT_MAX;
+	Entity* closestEnemy = nullptr;
+
+	for (Entity* enemy : m_enemies) 
+	{
+		if (!enemy->IsAlive()) 
+		{
+			continue;
+		}
+		float distance = Utils::SqrDistance(enemy->Xx, enemy->Yy, x, y);
+		if (closestDistance > distance) 
+		{
+			closestDistance = distance;
+			closestEnemy = enemy;
+		}
+	}
+
+	return closestEnemy;
 }
 
 void Game::DrawImGui()
