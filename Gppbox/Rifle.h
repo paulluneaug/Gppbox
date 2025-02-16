@@ -6,6 +6,8 @@
 
 class Rifle : public Weapon
 {
+	typedef Weapon Super;
+
 private:
 	std::vector<Projectile*> m_shotProjectiles;
 	Timer m_reloadTimer;

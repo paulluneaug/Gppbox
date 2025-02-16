@@ -14,9 +14,8 @@ void Rifle::Update(float deltaTime, float posX, float posY, float dirX, float di
 		m_shotProjectiles.push_back(newProjectile);
 	}
 
-	// 
-	int projectilesToDelete[5];
-	int nextProjectileIndex = 0;
+	// Only deletes one projectile per frame
+	int projectileToDeleteIndex = -1;
 	for (int iProj = 0; iProj < m_shotProjectiles.size(); ++iProj)
 	{
 		Projectile* projectile = m_shotProjectiles[iProj];
@@ -26,19 +25,14 @@ void Rifle::Update(float deltaTime, float posX, float posY, float dirX, float di
 		}
 		else
 		{
-			if (nextProjectileIndex >= 5)
-			{
-				continue;
-			}
-			projectilesToDelete[nextProjectileIndex++] = iProj;
+			projectileToDeleteIndex = iProj;
 		}
 	}
 
-	for (int iProj = 0; iProj < nextProjectileIndex; ++iProj)
+	if (projectileToDeleteIndex != -1) 
 	{
-		int projectileIndex = projectilesToDelete[iProj] - iProj;
-		Projectile* projectile = m_shotProjectiles[projectileIndex];
-		m_shotProjectiles.erase(m_shotProjectiles.begin() + projectileIndex);
+		Projectile* projectile = m_shotProjectiles[projectileToDeleteIndex];
+		m_shotProjectiles.erase(m_shotProjectiles.begin() + projectileToDeleteIndex);
 		delete projectile;
 	}
 }
