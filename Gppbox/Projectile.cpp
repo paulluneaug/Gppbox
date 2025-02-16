@@ -3,12 +3,15 @@
 #include "C.hpp"
 #include "Entity.h"
 
-Projectile::Projectile(Game& r_game, Vector2f position, Vector2f direction) :
+Projectile::Projectile(Game& r_game, Vector2f position, Vector2f direction, bool canCollideWithWalls) :
 	m_game(r_game),
 	m_position(position),
-	m_velocity(direction * DEFAULT_SPEED),
+	m_angle(Utils::Angle(direction, { 1.0f, 0.0f })),
+	m_speed(Utils::Magnitude(direction) * DEFAULT_SPEED),
 	IsAlive(true),
-	m_damage(DEFAULT_DAMAGE)
+	m_damage(DEFAULT_DAMAGE),
+	m_canCollideWithWalls(canCollideWithWalls),
+	m_currentLifetime(0.0f)
 {
 	float radius = 0.2f;
 	m_sprite = new sf::CircleShape(radius * Consts::GRID_SIZE);
@@ -22,18 +25,30 @@ void Projectile::Update(float deltaTime)
 		return;
 	}
 
+	m_currentLifetime += deltaTime;
+
+	if (m_currentLifetime >= MAX_LIFETIME) 
+	{
+		IsAlive = false;
+		return;
+	}
+
 	UpdateVelocity(deltaTime);
 
-	Vector2fUtils::ClampMagnitude(m_velocity, 0, m_maxSpeed);
+	m_speed = std::clamp(m_speed, 0.0f, m_maxSpeed);
 
-	sf::Vector2f offset = m_velocity * deltaTime;
+	sf::Vector2f offset = 
+	{ 
+		cos(m_angle) * deltaTime * m_speed,
+		sin(m_angle) * deltaTime * m_speed 
+	};
 
 	bool collided = false;
 
-	if (Vector2fUtils::SqrMagnitude(offset) > 1.0f) 
+	if (Utils::SqrMagnitude(offset) > 1.0f) 
 	{
-		sf::Vector2f step = Vector2fUtils::Normalized(offset);
-		while (Vector2fUtils::SqrMagnitude(offset) > 1.0f && !collided)
+		sf::Vector2f step = Utils::Normalize(offset);
+		while (Utils::SqrMagnitude(offset) > 1.0f && !collided)
 		{
 			offset -= step;
 			m_position += step;
@@ -61,7 +76,7 @@ void Projectile::Draw(sf::RenderWindow& r_window)
 		return;
 	}
 	m_sprite->setPosition(m_position);
-	m_sprite->setRotation(Vector2fUtils::Angle(m_velocity, { 1, 0 }));
+	m_sprite->setRotation(m_angle);
 	r_window.draw(*m_sprite);
 }
 
@@ -81,7 +96,7 @@ bool Projectile::CollidesWithEnemy(Entity** o_hitEnemy)
 
 bool Projectile::CheckCollisions()
 {
-	if (CollidesWithWall())
+	if (m_canCollideWithWalls && CollidesWithWall())
 	{
 		return true;
 	}

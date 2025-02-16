@@ -7,6 +7,8 @@ class Projectile
 public:
 	static constexpr float DEFAULT_DAMAGE = 1.0f;
 	static constexpr float DEFAULT_SPEED = 600.0f;
+	static constexpr float MAX_LIFETIME = 100.0f;
+
 	bool IsAlive;
 
 protected:
@@ -14,14 +16,19 @@ protected:
 	sf::Shape* m_sprite;
 
 	// Movements
-	Vector2f m_velocity;
+	float m_angle;
+	float m_speed;
 	Vector2f m_position;
 
 	float m_maxSpeed = DEFAULT_SPEED;
 	float m_damage = 1.0f;
 
+	bool m_canCollideWithWalls = true;
+
+	float m_currentLifetime;
+
 public:
-	Projectile(Game& r_game, Vector2f position, Vector2f direction);
+	Projectile(Game& r_game, Vector2f position, Vector2f direction, bool canCollideWithWalls = true);
 	virtual void Update(float deltaTime);
 	void Draw(sf::RenderWindow& r_window);
 
