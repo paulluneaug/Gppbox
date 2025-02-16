@@ -24,5 +24,12 @@ public:
 
     static float Sign(float val);
     static int Sign(int val);
+
+    /// <summary>
+    /// Framerate independant lerp
+    /// </summary>
+    /// <remarks>https://bsky.app/profile/freya.bsky.social/post/3klfoezuzil2l</remarks>
+    static float SmoothLerp(float a, float b, float deltaTime, float halfLife);
+    static sf::Vector2f SmoothLerp(const sf::Vector2f& a, const sf::Vector2f& b, float deltaTime, float halfLife);
 };
 

@@ -94,3 +94,17 @@ int Utils::Sign(int val)
 {
 	return val < 0 ? -1 : 1;
 }
+
+float Utils::SmoothLerp(float a, float b, float deltaTime, float halfLife)
+{
+	return b + (a - b) * exp2f(-deltaTime / halfLife);
+}
+
+sf::Vector2f Utils::SmoothLerp(const sf::Vector2f& a, const sf::Vector2f& b, float deltaTime, float halfLife)
+{
+	return 
+	{
+		SmoothLerp(a.x, b.x, deltaTime, halfLife),
+		SmoothLerp(a.y, b.y, deltaTime, halfLife)
+	};
+}
