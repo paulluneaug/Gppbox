@@ -29,7 +29,7 @@ bool Weapon::Update(float deltaTime, float posX, float posY, float dirX, float d
 			iterator = m_shotProjectiles.erase(iterator);
 		}
 	}
-	return false;
+	return shot;
 }
 
 void Weapon::OnWeaponSelected()
