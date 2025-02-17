@@ -14,6 +14,7 @@
 #include "Utils.h"
 
 #include "GlobalParameters.h"
+#include "Random.h"
 
 
 static int cols = 1280 / Consts::GRID_SIZE;
@@ -24,6 +25,8 @@ Game::Game(sf::RenderWindow* win) :
 	m_window(win)
 {
 	m_background = sf::RectangleShape(Vector2f((float)win->getSize().x, (float)win->getSize().y));
+
+	Random::SetSeed(0);
 
 	bool isOk = m_backgroundTexture.loadFromFile("res/bg_stars.png");
 	if (!isOk) {
