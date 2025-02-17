@@ -9,7 +9,7 @@
 
 PlayerEntity::PlayerEntity(Game& r_game) :
 	Super(r_game, { 1, 1 }, 3.0f),
-	m_weaponOffset({ 0.0f * Consts::GRID_SIZE , 0.5f * Consts::GRID_SIZE }),
+	m_weaponOffset({ float(m_size.x) / 2 * Consts::GRID_SIZE , float(m_size.y) / 2 * Consts::GRID_SIZE }),
 	m_shootInput(false),
 	m_selectedWeaponIndex(0)
 {
