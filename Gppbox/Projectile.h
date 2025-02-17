@@ -36,6 +36,7 @@ public:
 
 protected:
 	virtual void UpdateVelocity(float deltaTime);
+	virtual sf::Shape* CreateSprite();
 private :
 
 	bool CollidesWithWall(float x, float y);

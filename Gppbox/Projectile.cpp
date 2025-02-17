@@ -13,9 +13,7 @@ Projectile::Projectile(Game& r_game, Vector2f position, Vector2f direction, bool
 	m_canCollideWithWalls(canCollideWithWalls),
 	m_currentLifetime(0.0f)
 {
-	float radius = 0.2f * Consts::GRID_SIZE;
-	m_sprite = new sf::CircleShape(radius);
-	m_sprite->setOrigin({ radius , radius });
+	m_sprite = CreateSprite();
 }
 
 Projectile::~Projectile()
@@ -92,6 +90,16 @@ void Projectile::Draw(sf::RenderWindow& r_window)
 
 void Projectile::UpdateVelocity(float deltaTime)
 {
+}
+
+sf::Shape* Projectile::CreateSprite()
+{
+	float radius = 0.2f * Consts::GRID_SIZE;
+	sf::Shape* sprite = new sf::CircleShape(radius);
+	sprite->setOrigin({ radius , radius });
+	return sprite;
+
+
 }
 
 bool Projectile::CollidesWithWall(float x, float y)
