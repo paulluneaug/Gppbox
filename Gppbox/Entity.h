@@ -47,6 +47,7 @@ private:
 
 	float m_health;
 
+protected:
 	// Collisions
 	sf::Vector2i m_size;
 
