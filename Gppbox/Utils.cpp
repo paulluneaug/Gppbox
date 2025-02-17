@@ -111,6 +111,21 @@ sf::Vector2f Utils::SmoothLerp(const sf::Vector2f& a, const sf::Vector2f& b, flo
 	};
 }
 
+float Utils::RemapFrom01(float val, float targetMin, float targetMax)
+{
+	return targetMin + val * (targetMax - targetMin);
+}
+
+float Utils::RemapTo01(float val, float initialMin, float initialMax)
+{
+	return (val - initialMin) / (initialMax - initialMin);
+}
+
+float Utils::Remap(float val, float initialMin, float initialMax, float targetMin, float targetMax)
+{
+	return RemapFrom01(RemapTo01(val, initialMin, initialMax), targetMin, targetMax);
+}
+
 std::vector<std::array<float, 2>> Utils::Raycast(sf::Vector2f pos, sf::Vector2f dir, float maxDist, const sf::Vector2f& cellsSize)
 {
 	pos = { pos.x / cellsSize.x, pos.y / cellsSize.y };
