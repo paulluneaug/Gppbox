@@ -2,15 +2,17 @@
 
 #include "Entity.h"
 #include "Weapon.h"
+#include "Laser.h"
 
 class PlayerEntity : public Entity
 {
 	typedef Entity Super;
 
-	static constexpr int WEAPONS_COUNT = 3;
+	static constexpr int WEAPONS_COUNT = 4;
 
 private:
 	Weapon* m_weapons[WEAPONS_COUNT];
+	Laser* m_laser;
 	int m_selectedWeaponIndex;
 
 	sf::Vector2f m_weaponOffset;
@@ -27,5 +29,9 @@ public:
 
 	void SetShootState(bool shootState);
 	void SelectNextWeapon();
+
+protected:
+
+	virtual void UpdatePosition(float deltaTime) override;
 };
 

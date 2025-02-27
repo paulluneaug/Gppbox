@@ -16,9 +16,13 @@ PlayerEntity::PlayerEntity(Game& r_game) :
 {
 	m_sprite->setFillColor(Color::Cyan);
 
+	m_laser = new Laser(r_game, 3.0f, 2.0f, 5.0f);
+
 	m_weapons[0] = new Rifle(r_game, 0.1f);
-	m_weapons[1] = new MissileLauncher(r_game, 0.1f);
-	m_weapons[2] = new Drone(r_game, 0.1f, {5.0f, 5.0f });
+	m_weapons[1] = new MissileLauncher(r_game, 0.5f);
+	m_weapons[2] = new Drone(r_game, 0.3f, { 5.0f, 5.0f });
+	m_weapons[3] = m_laser;
+
 
 	m_weapons[m_selectedWeaponIndex]->OnWeaponSelected();
 }
@@ -82,4 +86,12 @@ void PlayerEntity::SelectNextWeapon()
 	m_weapons[m_selectedWeaponIndex]->OnWeaponUnselected();
 	m_selectedWeaponIndex = (m_selectedWeaponIndex + 1) % WEAPONS_COUNT;
 	m_weapons[m_selectedWeaponIndex]->OnWeaponSelected();
+}
+
+void PlayerEntity::UpdatePosition(float deltaTime)
+{
+	if (!m_laser->IsShooting()) 
+	{
+		Super::UpdatePosition(deltaTime);
+	}
 }

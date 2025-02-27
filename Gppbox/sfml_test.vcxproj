@@ -172,6 +172,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GlobalParameters.cpp" />
     <ClCompile Include="HotReloadShader.cpp" />
+    <ClCompile Include="Laser.cpp" />
     <ClCompile Include="Lib.cpp" />
     <ClCompile Include="libs\imgui-sfml\imgui-SFML.cpp" />
     <ClCompile Include="libs\imgui\imgui.cpp" />
@@ -203,6 +204,7 @@
     <ClInclude Include="GlobalParameters.h" />
     <ClInclude Include="HotReloadShader.hpp" />
     <ClInclude Include="Interp.hpp" />
+    <ClInclude Include="Laser.h" />
     <ClInclude Include="Lib.hpp" />
     <ClInclude Include="libs\imgui-sfml\imgui-SFML.h" />
     <ClInclude Include="libs\imgui-sfml\imgui-SFML_export.h" />
