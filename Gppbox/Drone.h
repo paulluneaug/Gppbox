@@ -1,7 +1,7 @@
 #pragma once
-#include "Weapon.h"
-#include "Projectile.h"
 #include "C.hpp"
+#include "Projectile.h"
+#include "Weapon.h"
 
 class Drone : public Weapon
 {
@@ -13,8 +13,6 @@ private:
 	static constexpr float LERP_HALF_TIME = 1.0f;
 
 private:
-	sf::Shape* m_sprite;
-
 	Vector2f m_position;
 
 public:
@@ -22,10 +20,13 @@ public:
 	virtual ~Drone();
 
 	virtual bool Update(float deltaTime, float posX, float posY, float dirX, float dirY) override;
-	virtual bool TryShoot(float deltaTime, float posX, float posY, float dirX, float dirY) override;
-	virtual void Draw(sf::RenderWindow& r_window) override;
 
 	virtual Vector2f GetKnockback() override;
+
+protected:
+	virtual bool TryShoot(float deltaTime, float posX, float posY, float dirX, float dirY) override;
+	virtual sf::Shape* CreateSprite() override;
+	void UpdateSpritePosition(float posX, float posY, float dirX, float dirY) override;
 
 };
 

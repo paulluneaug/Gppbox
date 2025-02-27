@@ -26,9 +26,12 @@ public:
 
 	sf::Vector2f Input;
 
+protected:
+
+	sf::Shape* m_sprite;
+
 private:
 	Game& m_game;
-	sf::Shape* m_sprite;
 	std::string m_name;
 
 	bool m_freeze;
@@ -37,7 +40,7 @@ private:
 
 	// Speed
 	float m_lateralSpeed = 8.0f;
-	float m_maxSpeed = 1.0f;
+	float m_maxSpeed = 30.0f;
 
 	// Jump
 	bool m_grounded;

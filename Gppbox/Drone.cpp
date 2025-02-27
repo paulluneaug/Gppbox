@@ -6,24 +6,55 @@ Drone::Drone(Game& r_game, float reloadTime, Vector2f startPosition) :
 	Super(r_game, reloadTime),
 	m_position(startPosition)
 {
-	float spriteSize = 0.5 * Consts::GRID_SIZE;
-	m_sprite = new RectangleShape({ spriteSize , spriteSize });
-	m_sprite->setOrigin({ spriteSize / 2 , spriteSize / 2 });
 }
 
 Drone::~Drone()
 {
-	delete m_sprite;
 }
 
 bool Drone::Update(float deltaTime, float posX, float posY, float dirX, float dirY)
 {
-	Vector2f toPLayer = { posX - m_position.x, posY - m_position.y };
-	Vector2f targetPosition = Vector2f{ posX, posY } - Utils::Normalize(toPLayer) * TARGET_DISTANCE_FROM_PLAYER;
+	bool shot = Super::Update(deltaTime, posX, posY, dirX, dirY);
 
-	m_position = Utils::SmoothLerp(m_position, targetPosition, deltaTime, LERP_HALF_TIME);
+	Vector2f toPlayer = Utils::Normalize({ posX - m_position.x, posY - m_position.y });
+	Vector2f targetPosition = Vector2f{ posX, posY } - toPlayer * TARGET_DISTANCE_FROM_PLAYER;
 
-	return Super::Update(deltaTime, posX, posY, dirX, dirY);
+	Vector2f newTargetPosition = Utils::SmoothLerp(m_position, targetPosition, deltaTime, LERP_HALF_TIME);
+	Vector2f offset = newTargetPosition - m_position;
+
+
+	for (std::array<float, 2>&hitPoint : Utils::Raycast(m_position, toPlayer, 1.0f, { Consts::GRID_SIZE,Consts::GRID_SIZE }))
+	{
+		if (m_game.IsWall(hitPoint[0], hitPoint[1]))
+		{
+			offset = { 0.0f, 0.0f };
+			break;
+		}
+	}
+
+	for (std::array<float, 2>&hitPoint : Utils::Raycast(m_position, { Utils::Sign(toPlayer.x), 0 }, 1.0f, { Consts::GRID_SIZE,Consts::GRID_SIZE }))
+	{
+		if (m_game.IsWall(hitPoint[0], hitPoint[1]))
+		{
+			offset.x = 0;
+			break;
+		}
+	}
+
+	for (std::array<float, 2>&hitPoint : Utils::Raycast(m_position, { 0, Utils::Sign(toPlayer.y)}, 1.0f, { Consts::GRID_SIZE,Consts::GRID_SIZE }))
+	{
+		if (m_game.IsWall(hitPoint[0], hitPoint[1]))
+		{
+			offset.y = 0;
+			break;
+		}
+	}
+	m_position += offset;
+
+
+	m_weaponSprite->setPosition(m_position);
+
+	return shot;
 }
 
 bool Drone::TryShoot(float deltaTime, float posX, float posY, float dirX, float dirY)
@@ -50,18 +81,35 @@ bool Drone::TryShoot(float deltaTime, float posX, float posY, float dirX, float 
 
 	Projectile* newProjectile = new Projectile(m_game, m_position, Utils::Normalize(toTarget));
 	m_shotProjectiles.push_back(newProjectile);
+
+	//m_muzzleFireTimer.Start();
+	//m_muzzleFireSprite->setPosition(posX, posY);
+
 	return true;
 }
 
-void Drone::Draw(sf::RenderWindow& r_window)
+sf::Shape* Drone::CreateSprite()
 {
-	Super::Draw(r_window);
-	m_sprite->setPosition(m_position);
-	r_window.draw(*m_sprite);
-
+	float spriteSize = 0.5f * Consts::GRID_SIZE;
+	sf::Shape* sprite = new RectangleShape({ spriteSize , spriteSize });
+	sprite->setOrigin({ spriteSize / 2 , spriteSize / 2 });
+	return sprite;
 }
 
 Vector2f Drone::GetKnockback()
 {
 	return { 0.0f, 0.0f };
+}
+
+//sf::Shape* Drone::CreateSprite()
+//{
+//	float spriteSize = 0.5f * Consts::GRID_SIZE;
+//	sf::Shape* sprite = new RectangleShape({ spriteSize , spriteSize });
+//	sprite->setOrigin({ spriteSize / 2 , spriteSize / 2 });
+//	return sprite;
+//}
+
+void Drone::UpdateSpritePosition(float posX, float posY, float dirX, float dirY)
+{
+	m_weaponSprite->setPosition(m_position);
 }

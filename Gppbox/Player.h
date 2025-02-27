@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Entity.h"
-#include "Weapon.h" 
+#include "Weapon.h"
 
 class PlayerEntity : public Entity
 {

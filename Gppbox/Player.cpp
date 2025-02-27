@@ -11,11 +11,14 @@ PlayerEntity::PlayerEntity(Game& r_game) :
 	Super(r_game, { 1, 1 }, 3.0f),
 	m_weaponOffset({ float(m_size.x) / 2 * Consts::GRID_SIZE , float(m_size.y) / 2 * Consts::GRID_SIZE }),
 	m_shootInput(false),
-	m_selectedWeaponIndex(0)
+	m_selectedWeaponIndex(0),
+	m_facingDirection(1.0f)
 {
+	m_sprite->setFillColor(Color::Cyan);
+
 	m_weapons[0] = new Rifle(r_game, 0.1f);
 	m_weapons[1] = new MissileLauncher(r_game, 0.1f);
-	m_weapons[2] = new Drone(r_game, 0.1f, {0.0f, 0.0f});
+	m_weapons[2] = new Drone(r_game, 0.1f, {5.0f, 5.0f });
 
 	m_weapons[m_selectedWeaponIndex]->OnWeaponSelected();
 }
@@ -34,7 +37,7 @@ void PlayerEntity::Update(float deltaTime)
 
 	if (Input.x != 0) 
 	{
-		m_facingDirection = Input.x;
+		m_facingDirection = Utils::Sign(Input.x);
 	}
 
 	Vector2f knockback = { 0.0f, 0.0f };
@@ -44,7 +47,7 @@ void PlayerEntity::Update(float deltaTime)
 			deltaTime,
 			Xx + m_weaponOffset.x,
 			Yy - m_weaponOffset.y,
-			Utils::Sign(m_facingDirection),
+			m_facingDirection,
 			0);
 
 		if (shot) 
@@ -53,7 +56,7 @@ void PlayerEntity::Update(float deltaTime)
 		}
 	}
 
-	Dx += knockback.x * -Utils::Sign(m_facingDirection);
+	Dx += knockback.x * -m_facingDirection;
 }
 
 void PlayerEntity::Draw(sf::RenderWindow& r_window)

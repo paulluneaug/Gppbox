@@ -4,6 +4,8 @@
 
 class EnemyEntity : public Entity
 {
+	typedef Entity Super;
+
 private :
 	bool m_goingRight;
 

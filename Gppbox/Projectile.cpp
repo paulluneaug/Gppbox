@@ -98,8 +98,6 @@ sf::Shape* Projectile::CreateSprite()
 	sf::Shape* sprite = new sf::CircleShape(radius);
 	sprite->setOrigin({ radius , radius });
 	return sprite;
-
-
 }
 
 bool Projectile::CollidesWithWall(float x, float y)

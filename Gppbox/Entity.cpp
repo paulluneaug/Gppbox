@@ -23,12 +23,12 @@ Entity::Entity(Game& game, sf::Vector2i size, float health) :
 	texture.loadFromFile("res/Player.png");
 	//m_sprite.setTexture(texture);
 
-	m_sprite = new sf::RectangleShape({ float(size.x * Consts::GRID_SIZE), float(size.y * Consts::GRID_SIZE) });
+	m_sprite = new sf::RectangleShape({ float(m_size.x * Consts::GRID_SIZE), float(m_size.y * Consts::GRID_SIZE) });
 	m_sprite->setFillColor(sf::Color::Red);
 	m_sprite->setOutlineColor(sf::Color::Magenta);
 	m_sprite->setOutlineThickness(0.0f);
 
-	sf::Vector2f origin = sf::Vector2f{ float(int(size.x / 2) * Consts::GRID_SIZE), float(size.y * Consts::GRID_SIZE) };
+	sf::Vector2f origin = sf::Vector2f{ float(int(m_size.x / 2) * Consts::GRID_SIZE), float(m_size.y * Consts::GRID_SIZE) };
 	m_sprite->setOrigin(origin);
 
 	m_xOffsets = (size.x & 1) == 0 ?
