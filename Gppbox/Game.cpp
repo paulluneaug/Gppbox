@@ -22,7 +22,8 @@ static int lastLine = 720 / Consts::GRID_SIZE - 1;
 
 Game::Game(sf::RenderWindow* win) :
 	m_editMode(false),
-	m_window(win)
+	m_window(win),
+	m_camera(Camera{ {0.0f, 0.0f, float(win->getSize().x),  float(win->getSize().y)}})
 {
 	m_background = sf::RectangleShape(Vector2f((float)win->getSize().x, (float)win->getSize().y));
 
@@ -143,11 +144,16 @@ void Game::Update(double dt) {
 		{
 			entity->Update(dt);
 		}
+
+		m_camera.UpdateCamera(dt);
 	}
 }
 
 void Game::Draw(sf::RenderWindow& win) {
 	if (m_closing) return;
+
+	sf::View defaultView = win.getView();
+	m_camera.ApplyCamera(win);
 
 	sf::RenderStates states = sf::RenderStates::Default;
 	sf::Shader* sh = &m_backgroundShader->sh;
@@ -206,6 +212,8 @@ void Game::Draw(sf::RenderWindow& win) {
 		dot.setPosition({ hitPoint[0] * Consts::GRID_SIZE, hitPoint[1] * Consts::GRID_SIZE });
 		win.draw(dot);
 	}
+
+	win.setView(defaultView);
 }
 
 
@@ -335,6 +343,11 @@ void Game::DrawImGui()
 			entity->DrawImGui();
 		}
 	}
+}
+
+Camera& Game::GetCamera()
+{
+	return m_camera;
 }
 
 #pragma region Level Editor

@@ -128,6 +128,8 @@ float Utils::Remap(float val, float initialMin, float initialMax, float targetMi
 
 std::vector<std::array<float, 2>> Utils::Raycast(sf::Vector2f pos, sf::Vector2f dir, float maxDist, const sf::Vector2f& cellsSize)
 {
+	std::vector<std::array<float, 2>> result;
+
 	pos = { pos.x / cellsSize.x, pos.y / cellsSize.y };
 
 	std::map<float, std::array<float, 2>> hitPoints;
@@ -137,10 +139,10 @@ std::vector<std::array<float, 2>> Utils::Raycast(sf::Vector2f pos, sf::Vector2f 
 		float deltaYX = dir.y / dir.x;
 		float offsetYX = pos.y - pos.x * deltaYX;
 
-		float cubeX = dir.x > 0.0f ? ceil(pos.x) : floor(pos.x);
+		float cellX = dir.x > 0.0f ? ceil(pos.x) : floor(pos.x);
 		while (true)
 		{
-			sf::Vector2f collision{ cubeX, cubeX * deltaYX + offsetYX };
+			sf::Vector2f collision{ cellX, cellX * deltaYX + offsetYX };
 
 			float sqrDistance = SqrDistance(pos, collision);
 			if (sqrDistance > maxDist * maxDist)
@@ -150,10 +152,10 @@ std::vector<std::array<float, 2>> Utils::Raycast(sf::Vector2f pos, sf::Vector2f 
 
 			hitPoints[sqrDistance] =
 			{
-				cubeX,// - (dir.x < 0.0f ? 1 : 0),
+				cellX,// - (dir.x < 0.0f ? 1 : 0),
 				collision.y
 			};
-			cubeX += Sign(dir.x);
+			cellX += Sign(dir.x);
 		}
 	}
 
@@ -162,10 +164,10 @@ std::vector<std::array<float, 2>> Utils::Raycast(sf::Vector2f pos, sf::Vector2f 
 		float deltaXY = dir.x / dir.y;
 		float offsetXY = pos.x - pos.y * deltaXY;
 
-		float cubeY = dir.y > 0.0f ? ceil(pos.y) : floor(pos.y);
+		float cellY = dir.y > 0.0f ? ceil(pos.y) : floor(pos.y);
 		while (true)
 		{
-			sf::Vector2f collision{ cubeY * deltaXY + offsetXY, cubeY };
+			sf::Vector2f collision{ cellY * deltaXY + offsetXY, cellY };
 			float sqrDistance = SqrDistance(pos, collision);
 			if (sqrDistance > maxDist * maxDist)
 			{
@@ -176,14 +178,15 @@ std::vector<std::array<float, 2>> Utils::Raycast(sf::Vector2f pos, sf::Vector2f 
 			{
 
 				collision.x,
-				cubeY// - (dir.y < 0.0f ? 1 : 0)
+				cellY// - (dir.y < 0.0f ? 1 : 0)
 			};
-			cubeY += Sign(dir.y);
+			cellY += Sign(dir.y);
 		}
 	}
 
+	sf::Vector2f endPoint = pos + dir * maxDist;
+	hitPoints[maxDist * maxDist] = { endPoint.x, endPoint.y };
 
-	std::vector<std::array<float, 2>> result;
 	std::transform(
 		hitPoints.begin(), hitPoints.end(),
 		std::back_inserter(result),

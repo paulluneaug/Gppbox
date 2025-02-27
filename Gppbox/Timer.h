@@ -21,6 +21,7 @@ public:
 	void SetDuration(float duration);
 
 	float GetProgress() const;
+	float GetTimeLeft() const;
 
 	void Start();
 	void Stop();

@@ -13,11 +13,13 @@
 
 #include "Particle.hpp"
 #include "ParticleManager.hpp"
+#include "Camera.h"
 
 
 class Entity;
 class EnemyEntity;
 class PlayerEntity;
+class Weapon;
 
 class HotReloadShader;
 
@@ -47,6 +49,8 @@ public:
 private:
 	PlayerEntity* m_player;
 	std::vector<Entity*> m_enemies;
+
+	Camera m_camera;
 
 	// Edit Mode
 	static constexpr char DELIMITER = ' ';
@@ -83,6 +87,8 @@ public:
 	Entity* GetClosestEnemy(float x, float y);
 
 	void DrawImGui();
+
+	Camera& GetCamera();
 
 private:
 

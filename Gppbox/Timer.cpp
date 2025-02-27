@@ -30,6 +30,11 @@ float Timer::GetProgress() const
 	return m_elapsedTime / m_duration;
 }
 
+float Timer::GetTimeLeft() const
+{
+	return m_duration - m_elapsedTime;
+}
+
 void Timer::Start()
 {
 	Pause(false);
