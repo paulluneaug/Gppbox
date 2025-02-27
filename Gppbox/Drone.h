@@ -10,7 +10,7 @@ class Drone : public Weapon
 private:
 	static constexpr float MAX_RANGE = 20.0f * Consts::GRID_SIZE;
 	static constexpr float TARGET_DISTANCE_FROM_PLAYER = 4.0f * Consts::GRID_SIZE;
-	static constexpr float LERP_HALF_TIME = 1.0f;
+	static constexpr float LERP_HALF_TIME = 0.3f;
 
 private:
 	Vector2f m_position;

@@ -57,13 +57,11 @@ bool Weapon::Update(float deltaTime, float posX, float posY, float dirX, float d
 
 void Weapon::OnWeaponSelected()
 {
-	m_reloadTimer.Start();
 	m_selected = true;
 }
 
 void Weapon::OnWeaponUnselected()
 {
-	m_reloadTimer.Stop();
 	m_selected = false;
 }
 

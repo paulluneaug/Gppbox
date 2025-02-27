@@ -84,7 +84,7 @@ void Projectile::Draw(sf::RenderWindow& r_window)
 		return;
 	}
 	m_sprite->setPosition(m_position);
-	m_sprite->setRotation(m_angle);
+	m_sprite->setRotation(m_angle * Utils::RAD_2_DEG);
 	r_window.draw(*m_sprite);
 }
 

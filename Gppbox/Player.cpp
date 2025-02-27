@@ -8,7 +8,7 @@
 #include "Utils.h"
 
 PlayerEntity::PlayerEntity(Game& r_game) :
-	Super(r_game, { 1, 1 }, 3.0f),
+	Super(r_game, { 1, 1 }, 3.0f, 18.0f),
 	m_weaponOffset({ float(m_size.x) / 2 * Consts::GRID_SIZE , float(m_size.y) / 2 * Consts::GRID_SIZE }),
 	m_shootInput(false),
 	m_selectedWeaponIndex(0),

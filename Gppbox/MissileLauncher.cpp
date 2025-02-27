@@ -6,17 +6,27 @@ MissileLauncher::MissileLauncher(Game& r_game, float reloadTime) :
 
 bool MissileLauncher::TryShoot(float deltaTime, float posX, float posY, float dirX, float dirY)
 {
-	if (m_shouldShoot && m_reloadTimer.Update(deltaTime))
+	bool reloadTimerFinished = m_reloadTimer.Update(deltaTime);
+	if (reloadTimerFinished && !m_shouldShoot)
 	{
-		Vector2f firePosition = GetFirePosition(posX, posY, dirX, dirY);
+		m_reloadTimer.Stop();
+	}
 
-		Entity* target = m_game.GetClosestEnemy(posX, posY);
-		HomingMissile* newProjectile = new HomingMissile(m_game, firePosition, { dirX, dirY }, target);
-		m_shotProjectiles.push_back(newProjectile);
+	if (!m_selected)
+	{
+		return false;
+	}
 
-		m_muzzleFireTimer.Start();
-		m_muzzleFireSprite->setPosition(firePosition);
-		m_game.GetCamera().ScreenShake(0.2f, 4.0f);
+	if (!m_reloadTimer.IsRunning() && m_shouldShoot)
+	{
+		m_reloadTimer.Start();
+		Shoot(posX, posY, dirX, dirY);
+		return true;
+	}
+
+	if (m_shouldShoot && reloadTimerFinished)
+	{
+		Shoot(posX, posY, dirX, dirY);
 		return true;
 	}
 	return false;
@@ -28,6 +38,19 @@ sf::Shape* MissileLauncher::CreateSprite()
 	sprite->setFillColor(Color{ 255u, 102u, 0u, 255u });
 	sprite->setOrigin(0.2f * Consts::GRID_SIZE, 0.25f * Consts::GRID_SIZE);
 	return sprite;
+}
+
+void MissileLauncher::Shoot(float posX, float posY, float dirX, float dirY)
+{
+	Vector2f firePosition = GetFirePosition(posX, posY, dirX, dirY);
+
+	Entity* target = m_game.GetClosestEnemy(posX, posY);
+	HomingMissile* newProjectile = new HomingMissile(m_game, firePosition, { dirX, dirY }, target);
+	m_shotProjectiles.push_back(newProjectile);
+
+	m_muzzleFireTimer.Start();
+	m_muzzleFireSprite->setPosition(firePosition);
+	m_game.GetCamera().ScreenShake(0.2f, 4.0f);
 }
 
 Vector2f MissileLauncher::GetKnockback()

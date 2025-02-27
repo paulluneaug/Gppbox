@@ -8,6 +8,7 @@ HomingMissile::HomingMissile(Game& r_game, Vector2f position, Vector2f direction
 	m_target(target)
 {
 	m_sprite->setFillColor(Color::Red);
+	m_sprite->setScale({ 2.0f, 1.0f });
 }
 
 void HomingMissile::Update(float deltaTime)

@@ -24,6 +24,7 @@ bool Laser::Update(float deltaTime, float posX, float posY, float dirX, float di
 	bool shot = Super::Update(deltaTime, posX, posY, dirX, dirY);
 	if (shot) 
 	{
+
 		for (std::array<float, 2>&hitPoint : Utils::Raycast(m_currentLaserPosition, m_currentLaserDirection, 300.0f, { Consts::GRID_SIZE,Consts::GRID_SIZE }))
 		{
 			Vector2f hitPointAbsolute = { hitPoint[0] * Consts::GRID_SIZE, hitPoint[1] * Consts::GRID_SIZE };
@@ -127,4 +128,6 @@ void Laser::Shoot(float posX, float posY, float dirX, float dirY)
 	m_laserShootingTimer.Start();
 	m_currentLaserDirection = { Utils::Sign(dirX), 0.0f };
 	m_currentLaserPosition = GetFirePosition(posX, posY, dirX, dirY);
+
+	m_game.GetCamera().ScreenShake(m_laserShootingTimer.GetDuration(), 7.0f);
 }

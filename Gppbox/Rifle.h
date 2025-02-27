@@ -10,7 +10,7 @@ class Rifle : public Weapon
 {
 	typedef Weapon Super;
 private:
-	static constexpr float KNOCKBACK = 0.1f * Consts::GRID_SIZE;
+	static constexpr float KNOCKBACK = 0.2f * Consts::GRID_SIZE;
 	static constexpr float DISPERSION = 5.0f * Utils::DEG_2_RAD;
 
 public:
@@ -22,5 +22,8 @@ protected:
 
 	virtual bool TryShoot(float deltaTime, float posX, float posY, float dirX, float dirY) override;
 	virtual sf::Shape* CreateSprite() override;
+
+private:
+	void Shoot(float posX, float posY, float dirX, float dirY);
 };
 

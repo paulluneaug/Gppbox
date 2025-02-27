@@ -11,7 +11,7 @@ class MissileLauncher : public Weapon
 	typedef Weapon Super;
 
 private:
-	static constexpr float KNOCKBACK = 0.3f * Consts::GRID_SIZE;
+	static constexpr float KNOCKBACK = 0.5f * Consts::GRID_SIZE;
 
 public:
 	MissileLauncher(Game& r_game, float reloadTime);
@@ -22,5 +22,8 @@ public:
 protected:
 	virtual bool TryShoot(float deltaTime, float posX, float posY, float dirX, float dirY) override;
 	virtual sf::Shape* CreateSprite() override;
+
+private:
+	void Shoot(float posX, float posY, float dirX, float dirY);
 };
 

@@ -8,26 +8,27 @@ Rifle::Rifle(Game& r_game, float reloadTime) :
 
 bool Rifle::TryShoot(float deltaTime, float posX, float posY, float dirX, float dirY)
 {
-	if (m_shouldShoot && m_reloadTimer.Update(deltaTime))
+	bool reloadTimerFinished = m_reloadTimer.Update(deltaTime);
+	if (reloadTimerFinished && !m_shouldShoot)
 	{
-		float dispersionAngle = Random::RandomFloat(-DISPERSION, DISPERSION);
-		float shootAngle = Utils::SignedAngle({ 1, 0 }, { dirX, dirY }) + dispersionAngle;
-		Vector2f direction =
-		{
-			cos(shootAngle),
-			sin(shootAngle)
-		};
+		m_reloadTimer.Stop();
+	}
 
-		Vector2f firePosition = GetFirePosition(posX, posY, dirX, dirY);
+	if (!m_selected)
+	{
+		return false;
+	}
 
-		Projectile* newProjectile = new Projectile(m_game, firePosition, direction);
-		m_shotProjectiles.push_back(newProjectile);
+	if (!m_reloadTimer.IsRunning() && m_shouldShoot)
+	{
+		m_reloadTimer.Start();
+		Shoot(posX, posY, dirX, dirY);
+		return true;
+	}
 
-		m_muzzleFireTimer.Start();
-		m_muzzleFireSprite->setPosition(firePosition);
-
-		m_game.GetCamera().ScreenShake(0.1f, 2.0f);
-
+	if (m_shouldShoot && reloadTimerFinished)
+	{
+		Shoot(posX, posY, dirX, dirY);
 		return true;
 	}
 	return false;
@@ -41,11 +42,28 @@ sf::Shape* Rifle::CreateSprite()
 	return sprite;
 }
 
+void Rifle::Shoot(float posX, float posY, float dirX, float dirY)
+{
+	float dispersionAngle = Random::RandomFloat(-DISPERSION, DISPERSION);
+	float shootAngle = Utils::SignedAngle({ 1, 0 }, { dirX, dirY }) + dispersionAngle;
+	Vector2f direction =
+	{
+		cos(shootAngle),
+		sin(shootAngle)
+	};
+
+	Vector2f firePosition = GetFirePosition(posX, posY, dirX, dirY);
+
+	Projectile* newProjectile = new Projectile(m_game, firePosition, direction);
+	m_shotProjectiles.push_back(newProjectile);
+
+	m_muzzleFireTimer.Start();
+	m_muzzleFireSprite->setPosition(firePosition);
+
+	m_game.GetCamera().ScreenShake(0.1f, 2.0f);
+}
+
 Vector2f Rifle::GetKnockback()
 {
 	return { KNOCKBACK, 0.0f };
 }
-
-//sf::Shape* Rifle::CreateSprite()
-//{
-//}

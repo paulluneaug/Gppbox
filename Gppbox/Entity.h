@@ -6,7 +6,7 @@ class Entity
 {
 private:
 	static constexpr float DEFAULT_AIR_FRICTION = 0.9f;
-	static constexpr float DEFAULT_GROUND_FRICTION = 0.9f;
+	static constexpr float DEFAULT_GROUND_FRICTION = 0.72f;
 
 public:
 
@@ -40,11 +40,11 @@ private:
 
 	// Speed
 	float m_lateralSpeed = 8.0f;
-	float m_maxSpeed = 30.0f;
+	float m_maxSpeed = 15.0f;
 
 	// Jump
 	bool m_grounded;
-	float m_jumpForce = 100;
+	float m_jumpForce = 75.0f;
 
 	bool m_jumpInput;
 
@@ -57,7 +57,7 @@ protected:
 	std::pair<int, int> m_xOffsets;
 
 public:
-	Entity(Game& r_game, sf::Vector2i size, float health);
+	Entity(Game& r_game, sf::Vector2i size, float health, float maxSpeed);
 
 	void SetCoordinates(float x, float y);
 	void SetGridCoordinates(int x, int y);

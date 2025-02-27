@@ -7,7 +7,7 @@
 #include "GlobalParameters.h"
 
 
-Entity::Entity(Game& game, sf::Vector2i size, float health) :
+Entity::Entity(Game& game, sf::Vector2i size, float health, float maxSpeed) :
 	m_game(game),
 	m_grounded(true),
 	m_size(size),
@@ -17,7 +17,8 @@ Entity::Entity(Game& game, sf::Vector2i size, float health) :
 	m_groundFriction(DEFAULT_GROUND_FRICTION),
 	m_airFriction(DEFAULT_AIR_FRICTION),
 	m_jumpInput(false),
-	m_health(health)
+	m_health(health),
+	m_maxSpeed(maxSpeed)
 {
 	sf::Texture texture = {};
 	texture.loadFromFile("res/Player.png");
