@@ -16,8 +16,6 @@ private:
 public:
 	Rifle(Game& r_game, float reloadTime);
 
-	virtual void Draw(sf::RenderWindow& r_window) override;
-
 	virtual Vector2f GetKnockback() override;
 
 protected:

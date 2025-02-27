@@ -2,10 +2,12 @@
 #include "Utils.h"
 #include "Weapon.h"
 
-Weapon::Weapon(Game& r_game, float reloadTime) :
+Weapon::Weapon(Game& r_game, float reloadTime, bool alwaysDraw, sf::Vector2f fireOffset) :
 	m_game(r_game),
 	m_reloadTimer(Timer{ reloadTime,true }),
-	m_muzzleFireTimer(Timer{ 0.001f, false })
+	m_muzzleFireTimer(Timer{ 0.01f, false }),
+	m_alwaysDraw(alwaysDraw),
+	m_fireOffset(fireOffset)
 {
 	m_muzzleFireSprite = CreateMuzzleFireSprite();
 }
@@ -67,7 +69,10 @@ void Weapon::OnWeaponUnselected()
 
 void Weapon::Draw(sf::RenderWindow& r_window)
 {
-	r_window.draw(*m_weaponSprite);
+	if (m_selected || m_alwaysDraw)
+	{
+		r_window.draw(*m_weaponSprite);
+	}
 	if (m_muzzleFireTimer.IsRunning())
 	{
 		r_window.draw(*m_muzzleFireSprite);
@@ -91,7 +96,7 @@ sf::Shape* Weapon::CreateMuzzleFireSprite()
 {
 	float radius = 0.4f * Consts::GRID_SIZE;
 	sf::Shape* sprite = new sf::CircleShape(radius);
-	sprite->setFillColor(Color::Yellow);
+	sprite->setFillColor(Color::White);
 	sprite->setOrigin({ radius , radius });
 	return sprite;
 }
@@ -100,4 +105,9 @@ void Weapon::UpdateSpritePosition(float posX, float posY, float dirX, float dirY
 {
 	m_weaponSprite->setPosition(posX, posY);
 	m_weaponSprite->setRotation(Utils::Sign(dirX) * 90 - 90);
+}
+
+sf::Vector2f Weapon::GetFirePosition(float posX, float posY, float dirX, float dirY)
+{
+	return { posX + m_fireOffset.x * Utils::Sign(dirX), posY + m_fireOffset.y * Utils::Sign(dirY)};
 }

@@ -74,7 +74,6 @@ void Entity::Update(float deltaTime)
 	}
 
 	UpdatePosition(deltaTime);
-
 }
 
 void Entity::UpdatePosition(float deltaTime)

@@ -14,11 +14,13 @@ protected:
 	sf::Shape* m_weaponSprite;
 	sf::Shape* m_muzzleFireSprite;
 	Timer m_muzzleFireTimer;
+	sf::Vector2f m_fireOffset;
 
 	bool m_selected = false;
+	bool m_alwaysDraw = false;
 
 public:
-	Weapon(Game& r_game, float reloadTime);
+	Weapon(Game& r_game, float reloadTime, bool alwaysDraw, sf::Vector2f fireOffset);
 	virtual ~Weapon();
 
 	void SetShouldShoot(bool shootState);
@@ -37,5 +39,7 @@ protected:
 	sf::Shape* CreateMuzzleFireSprite();
 
 	virtual void UpdateSpritePosition(float posX, float posY, float dirX, float dirY);
+
+	sf::Vector2f GetFirePosition(float posX, float posY, float dirX, float dirY);
 }; 
 

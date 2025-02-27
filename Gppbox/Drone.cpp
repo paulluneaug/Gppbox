@@ -3,7 +3,7 @@
 #include "Utils.h"
 
 Drone::Drone(Game& r_game, float reloadTime, Vector2f startPosition) :
-	Super(r_game, reloadTime),
+	Super(r_game, reloadTime, true, { 0.0f, 0.0f }),
 	m_position(startPosition)
 {
 }
