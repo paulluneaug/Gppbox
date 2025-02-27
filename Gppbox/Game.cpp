@@ -67,7 +67,8 @@ void Game::CacheWalls()
 	}
 }
 
-void Game::ProcessInput(sf::Event ev) {
+void Game::ProcessInput(sf::Event ev) 
+{
 	if (ev.type == sf::Event::Closed)
 	{
 		m_window->close();
@@ -90,17 +91,29 @@ void Game::PollInput(double dt)
 {
 	bool leftPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q);
 	bool rightPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D);
-	m_player->Input.x = (leftPressed ? -1 : 0) + (rightPressed ? 1 : 0);
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) 
+	float keyboardXInput = (leftPressed ? -1 : 0) + (rightPressed ? 1 : 0);
+	float controllerXInput = ApplyDeadzone(sf::Joystick::getAxisPosition(0, sf::Joystick::Axis::X) / 100.0f);
+
+	m_player->Input.x = controllerXInput + keyboardXInput;
+	m_player->Input.y = ApplyDeadzone(sf::Joystick::getAxisPosition(0, sf::Joystick::Axis::Y) / 100.0f);
+
+	bool changeWeaponInput = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) || sf::Joystick::isButtonPressed(0, 1);
+	if (!m_changedWeaponLastFrame && changeWeaponInput)
 	{
 		m_player->SelectNextWeapon();
+		m_changedWeaponLastFrame = true;
+	}
+	else if (!changeWeaponInput)
+	{
+		m_changedWeaponLastFrame = false;
 	}
 
+	bool controllerXPressed = sf::Joystick::isButtonPressed(0, 2);
 	bool rightButtonPressed = sf::Mouse::isButtonPressed(sf::Mouse::Right);
 	bool leftButtonPressed = sf::Mouse::isButtonPressed(sf::Mouse::Left);
 
-	m_player->SetShootState(leftButtonPressed);
+	m_player->SetShootState(leftButtonPressed || controllerXPressed);
 
 	if (rightButtonPressed)
 	{
@@ -112,7 +125,8 @@ void Game::PollInput(double dt)
 	}
 
 	bool spacePressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space);
-	m_player->SetJumpInput(spacePressed);
+	bool aPressed = sf::Joystick::isButtonPressed(0, 0);
+	m_player->SetJumpInput(spacePressed || aPressed);
 
 }
 
@@ -670,5 +684,14 @@ void Game::DeleteIfExists(void* ptr)
 	{
 		delete ptr;
 	}
+}
+
+float Game::ApplyDeadzone(float input)
+{
+	if (abs(input) > AXIS_DEADZONE) 
+	{
+		return input;
+	}
+	return 0.0f;
 }
 

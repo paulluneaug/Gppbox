@@ -33,6 +33,8 @@ private:
 		Player = 3,
 	};
 
+	static constexpr float AXIS_DEADZONE = 0.1f;
+
 public:
 	sf::RenderWindow*				m_window = nullptr;
 	bool							m_closing = false;
@@ -51,6 +53,8 @@ private:
 	std::vector<Entity*> m_enemies;
 
 	Camera m_camera;
+
+	bool m_changedWeaponLastFrame = false;
 
 	// Edit Mode
 	static constexpr char DELIMITER = ' ';
@@ -110,4 +114,5 @@ private:
 
 	static bool TryParseVector2i(std::string& r_str, char delimiter, sf::Vector2i& o_result);
 	static void DeleteIfExists(void* ptr);
+	static float ApplyDeadzone(float input);
 };
