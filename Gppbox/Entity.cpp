@@ -20,10 +20,6 @@ Entity::Entity(Game& game, sf::Vector2i size, float health, float maxSpeed) :
 	m_health(health),
 	m_maxSpeed(maxSpeed)
 {
-	sf::Texture texture = {};
-	texture.loadFromFile("res/Player.png");
-	//m_sprite.setTexture(texture);
-
 	m_sprite = new sf::RectangleShape({ float(m_size.x * Consts::GRID_SIZE), float(m_size.y * Consts::GRID_SIZE) });
 	m_sprite->setFillColor(sf::Color::Red);
 	m_sprite->setOutlineColor(sf::Color::Magenta);
