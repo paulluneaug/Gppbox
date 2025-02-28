@@ -20,7 +20,7 @@ PlayerEntity::PlayerEntity(Game& r_game) :
 
 	m_weapons[0] = new Rifle(r_game, 0.1f);
 	m_weapons[1] = new MissileLauncher(r_game, 0.4f);
-	m_weapons[2] = new Drone(r_game, 0.3f, { 5.0f, 5.0f });
+	m_weapons[2] = new Drone(r_game, 0.2f, { 5.0f, 5.0f });
 	m_weapons[3] = m_laser;
 
 
@@ -33,6 +33,12 @@ PlayerEntity::~PlayerEntity()
 	{
 		delete m_weapons[iWeapon];
 	}
+}
+
+void PlayerEntity::SetCoordinates(float x, float y)
+{
+	Super::SetCoordinates(x, y);
+	((Drone*)m_weapons[2])->SetPosition({ x, y - Consts::GRID_SIZE * 2.0f });
 }
 
 void PlayerEntity::Update(float deltaTime)

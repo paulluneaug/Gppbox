@@ -23,7 +23,7 @@ bool Drone::Update(float deltaTime, float posX, float posY, float dirX, float di
 	Vector2f offset = newTargetPosition - m_position;
 
 
-	for (std::array<float, 2>&hitPoint : Utils::Raycast(m_position, toPlayer, 1.0f, { Consts::GRID_SIZE,Consts::GRID_SIZE }))
+	for (std::array<float, 2>&hitPoint : Utils::Raycast(m_position, offset, 1.0f, { Consts::GRID_SIZE,Consts::GRID_SIZE }))
 	{
 		if (m_game.IsWall(hitPoint[0], hitPoint[1]))
 		{
@@ -32,7 +32,7 @@ bool Drone::Update(float deltaTime, float posX, float posY, float dirX, float di
 		}
 	}
 
-	for (std::array<float, 2>&hitPoint : Utils::Raycast(m_position, { Utils::Sign(toPlayer.x), 0 }, 1.0f, { Consts::GRID_SIZE,Consts::GRID_SIZE }))
+	for (std::array<float, 2>&hitPoint : Utils::Raycast(m_position, { Utils::Sign(offset.x), 0 }, 1.0f, { Consts::GRID_SIZE,Consts::GRID_SIZE }))
 	{
 		if (m_game.IsWall(hitPoint[0], hitPoint[1]))
 		{
@@ -41,7 +41,7 @@ bool Drone::Update(float deltaTime, float posX, float posY, float dirX, float di
 		}
 	}
 
-	for (std::array<float, 2>&hitPoint : Utils::Raycast(m_position, { 0, Utils::Sign(toPlayer.y)}, 1.0f, { Consts::GRID_SIZE,Consts::GRID_SIZE }))
+	for (std::array<float, 2>&hitPoint : Utils::Raycast(m_position, { 0, Utils::Sign(offset.y)}, 1.0f, { Consts::GRID_SIZE,Consts::GRID_SIZE }))
 	{
 		if (m_game.IsWall(hitPoint[0], hitPoint[1]))
 		{
@@ -59,7 +59,16 @@ bool Drone::Update(float deltaTime, float posX, float posY, float dirX, float di
 
 bool Drone::TryShoot(float deltaTime, float posX, float posY, float dirX, float dirY)
 {
-	if (!m_reloadTimer.Update(deltaTime)) 
+	if (!m_selected)
+	{
+		return false;
+	}
+
+	if (!m_reloadTimer.IsRunning())
+	{
+		m_reloadTimer.Start();
+	}
+	else if (!m_reloadTimer.Update(deltaTime))
 	{
 		return false;
 	}
@@ -99,6 +108,11 @@ sf::Shape* Drone::CreateSprite()
 Vector2f Drone::GetKnockback()
 {
 	return { 0.0f, 0.0f };
+}
+
+void Drone::SetPosition(Vector2f newPosition)
+{
+	m_position = newPosition;
 }
 
 //sf::Shape* Drone::CreateSprite()

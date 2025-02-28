@@ -24,6 +24,7 @@ public:
 	PlayerEntity(Game& r_game);
 	~PlayerEntity();
 
+	virtual void SetCoordinates(float x, float y) override;
 	virtual void Update(float deltaTime) override;
 	virtual void Draw(sf::RenderWindow& r_window) override;
 

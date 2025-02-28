@@ -23,10 +23,15 @@ public:
 
 	virtual Vector2f GetKnockback() override;
 
+	void SetPosition(Vector2f newPosition);
+
 protected:
 	virtual bool TryShoot(float deltaTime, float posX, float posY, float dirX, float dirY) override;
 	virtual sf::Shape* CreateSprite() override;
 	void UpdateSpritePosition(float posX, float posY, float dirX, float dirY) override;
+
+private:
+	void Shoot(float posX, float posY, float dirX, float dirY);
 
 };
 

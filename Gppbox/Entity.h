@@ -59,7 +59,7 @@ protected:
 public:
 	Entity(Game& r_game, sf::Vector2i size, float health, float maxSpeed);
 
-	void SetCoordinates(float x, float y);
+	virtual void SetCoordinates(float x, float y);
 	void SetGridCoordinates(int x, int y);
 	void SetName(const std::string& name);
 
