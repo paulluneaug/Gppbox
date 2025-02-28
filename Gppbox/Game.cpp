@@ -521,7 +521,7 @@ void Game::ExitEditMode()
 
 void Game::ProcessMouseInput(sf::Mouse::Button pressedButton)
 {
-	if (ImGui::IsWindowHovered() || ImGui::IsWindowFocused())
+	if (ImGui::GetIO().WantCaptureMouse)
 	{
 		return;
 	}
