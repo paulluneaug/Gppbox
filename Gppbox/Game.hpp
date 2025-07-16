@@ -1,6 +1,9 @@
 #pragma once
 
 #include <vector>
+#include <iostream>
+#include <fstream>
+#include <sstream>
 
 #include "SFML/Graphics.hpp"
 #include "SFML/System.hpp"
@@ -9,41 +12,107 @@
 #include "sys.hpp"
 
 #include "Particle.hpp"
-#include "ParticleMan.hpp"
+#include "ParticleManager.hpp"
+#include "Camera.h"
 
-using namespace sf;
+
+class Entity;
+class EnemyEntity;
+class PlayerEntity;
+class Weapon;
 
 class HotReloadShader;
+
 class Game {
+private:
+	enum PlacableObject 
+	{
+		None = 0,
+		Wall = 1,
+		Enemy = 2,
+		Player = 3,
+	};
+
+	static constexpr float AXIS_DEADZONE = 0.1f;
+
 public:
-	sf::RenderWindow*				win = nullptr;
+	sf::RenderWindow*				m_window = nullptr;
+	bool							m_closing = false;
 
-	sf::RectangleShape				bg;
-	HotReloadShader *				bgShader = nullptr;
+	// Background
+	sf::RectangleShape				m_background;
+	HotReloadShader *				m_backgroundShader = nullptr;
+	sf::Texture						m_backgroundTexture;
 
-	sf::Texture						tex;
-
-	bool							closing = false;
 	
-	std::vector<sf::Vector2i>		walls;
-	std::vector<sf::RectangleShape> wallSprites;
+	std::vector<sf::Vector2i>		m_walls;
+	std::vector<sf::RectangleShape> m_wallSprites;
 
-	ParticleMan beforeParts;
-	ParticleMan afterParts;
+private:
+	PlayerEntity* m_player;
+	std::vector<Entity*> m_enemies;
+
+	Camera m_camera;
+
+	bool m_changedWeaponLastFrame = false;
+
+	// Edit Mode
+	static constexpr char DELIMITER = ' ';
+	bool m_editMode;
+	PlacableObject m_selectedObject;
+
+	// Debug
+	sf::Vector2f m_raycastOrigin;
+	float m_raycastAngle;
+	float m_raycastDistance;
+
+
+public:
+	ParticleManager beforeParts;
+	ParticleManager afterParts;
 
 	Game(sf::RenderWindow * win);
+	~Game();
 
-	void cacheWalls();
 
-	void processInput(sf::Event ev);
-	bool wasPressed = false;
-	void pollInput(double dt);
-	void onSpacePressed();
+	void CacheWalls();
 
-	void update(double dt);
+	void ProcessInput(sf::Event ev);
+	void PollInput(double dt);
 
-	void draw(sf::RenderWindow& win);
+	void Update(double dt);
 
-	bool isWall(int cx, int cy);
-	void im();
+	void Draw(sf::RenderWindow& win);
+
+	bool IsWall(int cx, int cy);
+	bool IsWall(sf::Vector2i position);
+
+	bool CollidesWithEnemyAtPoint(float x, float y, Entity** o_hitEnemy);
+	Entity* GetClosestEnemy(float x, float y);
+
+	void DrawImGui();
+
+	Camera& GetCamera();
+
+private:
+
+	void InitPlayer();
+
+	// Edit Mode
+	void LoadLevel();
+	void CreateEmptyLevel();
+	void ReloadLevel();
+	void SaveLevel();
+	void ClearLevel();
+	void EnterEditMode();
+	void ExitEditMode();
+	void ProcessMouseInput(sf::Mouse::Button pressedButton);
+	void ProcessMouseInput_EditMode(sf::Mouse::Button pressedButton);
+	EnemyEntity* CreateEnemyAtPosition(sf::Vector2i position);
+
+	bool IsEnemyAtPosition(sf::Vector2i position);
+
+	static bool TryParseVector2i(std::string& r_str, char delimiter, sf::Vector2i& o_result);
+	static void DeleteIfExists(void* ptr);
+	static float ApplyDeadzone(float input);
 };

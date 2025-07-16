@@ -1,0 +1,93 @@
+#pragma once
+#include "SFML/Graphics.hpp"
+#include "Game.hpp"
+
+class Entity
+{
+private:
+	static constexpr float DEFAULT_AIR_FRICTION = 0.9f;
+	static constexpr float DEFAULT_GROUND_FRICTION = 0.72f;
+
+public:
+
+	// Base coordinates
+	int GridX;
+	int GridY;
+	float Rx;
+	float Ry;
+
+	// Resulting coordinates
+	float Xx;
+	float Yy;
+
+	// Movements
+	float Dx;
+	float Dy;
+
+	sf::Vector2f Input;
+
+protected:
+
+	sf::Shape* m_sprite;
+
+private:
+	Game& m_game;
+	std::string m_name;
+
+	bool m_freeze;
+	float m_groundFriction;
+	float m_airFriction;
+
+	// Speed
+	float m_lateralSpeed = 8.0f;
+	float m_maxSpeed = 15.0f;
+
+	// Jump
+	bool m_grounded;
+	float m_jumpForce = 75.0f;
+
+	bool m_jumpInput;
+
+	float m_health;
+
+protected:
+	// Collisions
+	sf::Vector2i m_size;
+
+	std::pair<int, int> m_xOffsets;
+
+public:
+	Entity(Game& r_game, sf::Vector2i size, float health, float maxSpeed);
+
+	virtual void SetCoordinates(float x, float y);
+	void SetGridCoordinates(int x, int y);
+	void SetName(const std::string& name);
+
+	virtual void Update(float deltaTime);
+	virtual void Draw(sf::RenderWindow& r_window);
+	void SetJumpInput(bool state);
+
+	virtual bool DrawImGui();
+
+	bool CollidesWithPoint(float x, float y) const;
+
+	void TakeDamage(float damage);
+	bool IsAlive() const;
+
+	Vector2f GetCenter() const;
+
+private:
+
+	void TryJump();
+
+	void ResolvePhysics(float deltaTime);
+
+protected:
+	virtual void UpdatePosition(float deltaTime);
+	bool CollidesLeft(float deltaTime);
+	bool CollidesRight(float deltaTime);
+
+	bool HasCollisionWithCell(int x, int y) const;
+
+};
+

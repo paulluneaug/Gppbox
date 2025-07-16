@@ -1,7 +1,6 @@
 #pragma once
 
-namespace C {
-
+namespace Consts 
+{
 	static constexpr int GRID_SIZE = 16;
-
 }

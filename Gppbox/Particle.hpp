@@ -1,8 +1,8 @@
 #pragma once
 
-#include "SFML/Graphics.hpp"
-#include "Lib.hpp"
 #include "Dice.hpp"
+#include "Lib.hpp"
+#include "SFML/Graphics.hpp"
 #include <functional>
 
 using namespace sf;
@@ -23,7 +23,7 @@ public:
 
 	bool			destroyed = false;
 
-	std::function<void(Particle * lthis, float dt)> bhv;
+	std::function<void(Particle* lthis, float dt)> bhv;
 
 	Particle();
 
@@ -35,10 +35,10 @@ public:
 		el.rotate(dt * 3.0f);
 
 		life -= dt;
-		
+
 		el.setScale(scaleX, scaleY);
-		
-		bhv(this,dt);
+
+		bhv(this, dt);
 
 		if (el.getSize().x <= 0.1 || el.getSize().y <= 0.1) {
 			destroyed = true;

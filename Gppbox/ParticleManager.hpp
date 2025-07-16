@@ -3,7 +3,7 @@
 #include <vector>
 #include "Particle.hpp"
 
-class ParticleMan {
+class ParticleManager {
 public:
 	std::vector<Particle> parts;
 	
